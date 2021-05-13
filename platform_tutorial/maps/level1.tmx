@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.5" tiledversion="1.6.0" orientation="orthogonal" renderorder="right-down" width="99" height="25" tilewidth="128" tileheight="128" infinite="0" backgroundcolor="#0096c8" nextlayerid="10" nextobjectid="1">
+ <tileset firstgid="1" source="../images/tiles/Tile Set.tsx"/>
+ <tileset firstgid="146" source="../images/tiles/Dirt.tsx"/>
+ <tileset firstgid="185" source="../images/tiles/Stone.tsx"/>
+ <tileset firstgid="204" source="../images/tiles/Items.tsx"/>
+ <layer id="2" name="Background" width="99" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztz0EKwCAMBED//zahPsmTUIKIopYeZm4hmmRTAgAAANiXP9pTFneVUD8Hb7mt5YwZ3ka9P+vdPZO39z7+Gc1emQ8AAAAAnFUB48IM6A==
+  </data>
+ </layer>
+ <layer id="4" name="Don't Touch" width="99" height="25">
+  <data encoding="base64" compression="zlib">
+   eJzt0bEJACAABDH3X0/cwTFsLRRslEcSuAmuFAAAAAAAyNWn2GuLeKcexn1eZPEgixc5vMjhQxYvcniR47cXAycjNQo=
+  </data>
+ </layer>
+ <layer id="7" name="Do Touch" width="99" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztzjEJAAAIADD7h9NKfoK/4LMlWAQAAABwpb4DjPwOAAAAAACwNHLUAZ4=
+  </data>
+ </layer>
+ <layer id="9" name="Start Block" width="99" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztzjEBAAAMAiD7h1umtdAHEpAAAAAAQN+tAwAAAABA1QNPtADP
+  </data>
+ </layer>
+ <layer id="3" name="Platforms" width="99" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztlU0KwjAQhecqnsAr9R7duBK8hduCPxuLGxd1VcipTGjBMOZnUsfSyvvgLUpKk/fekBIBAAAAAAAAAAAAgLXTWt0zus24V0xnpTPMhfO6zYh7vFo1GV1oei9+/pK9nB5MhujovnUS+JtDh+FM1Cc8O6+bhCQ5SHtJdSLJn+cd09P20I9d0JBBVWd8aqnOyHjn8mkE35bmLczoYy7sc2WGtUqadUkP4x6d8WTf6VJ5aefvy2WwZxm0kS5CaGTk92E8aXbgcuY9hODdSPrR1I7effC7SUrIe0jOl2Z/kn0lHaQI9RPzVkfOVtoHn8XQvREjdQ9IfJV09KvMv6XUW6iHVG+5Png2U/OQzt4SMi8l561kDmP/dxrWVpfN0vjnOQQAAAA0eQEXN5ei
+  </data>
+ </layer>
+ <layer id="5" name="Ladder" width="99" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20KP6AAAAAAAAAAAADgayasAAE=
+  </data>
+ </layer>
+ <layer id="6" name="Coins" width="99" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztwTEBAAAAwqD1T20KP6AAAAAAAAAAAADgayasAAE=
+  </data>
+ </layer>
+ <layer id="8" name="Foreground" width="99" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztz7EJAEAIwED3n86RbJ+vBUHvFgiJAAAAAOiVR5pTLr3+tr5v/QIAAACAVwF+GAQR
+  </data>
+ </layer>
+</map>
