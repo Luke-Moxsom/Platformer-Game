@@ -1,8 +1,3 @@
-"""
-Platformer Game
-
-python -m arcade.examples.Game Assessment.11_animate_character
-"""
 import arcade
 import os
 
@@ -12,7 +7,7 @@ SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Game Assessment"
 
 # Constants used to scale our sprites from their original size
-TILE_SCALING = 0.3
+TILE_SCALING = 0.4
 CHARACTER_SCALING = TILE_SCALING * 2
 COIN_SCALING = TILE_SCALING
 SPRITE_PIXEL_SIZE = 128
@@ -23,8 +18,7 @@ PLAYER_MOVEMENT_SPEED = 7
 GRAVITY = 1.5
 PLAYER_JUMP_SPEED = 25
 
-# How many pixels to keep as a minimum margin between the character
-# and the edge of the screen.
+# How many pixels to keep as a minimum margin between the character and the edge of the screen.
 LEFT_VIEWPORT_MARGIN = 680
 RIGHT_VIEWPORT_MARGIN = 680
 BOTTOM_VIEWPORT_MARGIN = 360
@@ -36,9 +30,7 @@ LEFT_FACING = 1
 
 
 def load_texture_pair(filename):
-    """
-    Load a texture pair, with the second being a mirror image.
-    """
+    """ Load a texture pair, with the second being a mirror image """
     return [
         arcade.load_texture(filename),
         arcade.load_texture(filename, flipped_horizontally=True)
@@ -48,7 +40,6 @@ def load_texture_pair(filename):
 class PlayerCharacter(arcade.Sprite):
     """ Player Sprite"""
     def __init__(self):
-
         # Set up parent class
         super().__init__()
 
@@ -65,7 +56,6 @@ class PlayerCharacter(arcade.Sprite):
         self.is_on_ladder = False
 
         # --- Load Textures ---
-
         main_path = ":resources:images/animated_characters/male_adventurer/maleAdventurer"
 
         # Load textures for idle standing
@@ -95,7 +85,6 @@ class PlayerCharacter(arcade.Sprite):
         self.set_hit_box(self.texture.hit_box_points)
 
     def update_animation(self, delta_time: float = 1/60):
-
         # Figure out if we need to flip face left or right
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
             self.character_face_direction = LEFT_FACING
@@ -135,18 +124,64 @@ class PlayerCharacter(arcade.Sprite):
         self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
 
 
-class MyGame(arcade.Window):
-    """
-    Main application class.
-    """
+class InstructionView(arcade.View):
+    """ View to show instructions """
+    def on_show(self):
+        """ This is run once when we switch to this view """
+        arcade.set_background_color(arcade.csscolor.BLACK)
 
+        # Reset the viewport, necessary if we have a scrolling game and we need
+        # to reset the viewport back to the start so we can see what we draw.
+        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+
+    def on_draw(self):
+        """ Draw this view """
+        arcade.start_render()
+        arcade.draw_text("Test Starting Screen", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+                         arcade.color.WHITE, font_size=50, anchor_x="center")
+        arcade.draw_text("Click To Start The Game", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
+                         arcade.color.WHITE, font_size=20, anchor_x="center")
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        """ If the user presses the mouse button, start the game """
+        game_view = GameView()
+        game_view.setup(1)
+        self.window.show_view(game_view)
+
+
+class GameOverView(arcade.View):
+    """ View to show when game is over """
     def __init__(self):
-        """
-        Initializer for the game
-        """
+        """ This is run once when we switch to this view """
+        super().__init__()
+        arcade.set_background_color(arcade.csscolor.RED)
+
+        # Reset the viewport, necessary if we have a scrolling game and we need
+        # to reset the viewport back to the start so we can see what we draw.
+        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+
+    def on_draw(self):
+        """ Draw this view """
+        arcade.start_render()
+        arcade.draw_text("Test Death Screen", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+                         arcade.color.WHITE, font_size=50, anchor_x="center")
+        arcade.draw_text("Click (Does Nothing Currently)", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 75,
+                         arcade.color.WHITE, font_size=20, anchor_x="center")
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        """ If the user presses the mouse button, re-start the game """
+
+
+class GameView(arcade.View):
+    """ Main application class """
+    def __init__(self):
+        """ Initializer for the game """
 
         # Call the parent class and set up the window
-        super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+        super().__init__()
+
+        # Set the mouse to visible
+        self.window.set_mouse_visible(True)
 
         # Set the path to start with this program
         file_path = os.path.dirname(os.path.abspath(__file__))
@@ -190,8 +225,10 @@ class MyGame(arcade.Window):
         # Level
         self.level = 1
 
-        # Keep track of the score
-        self.score = 0
+        # Keep track of the players lives
+        # Change lives
+        self.lives = 3
+        self.death = -1
 
         # Load sounds
         self.collect_coin_sound = arcade.load_sound(":resources:sounds/coin1.wav")
@@ -199,14 +236,10 @@ class MyGame(arcade.Window):
         self.game_over = arcade.load_sound(":resources:sounds/gameover1.wav")
 
     def setup(self, level):
-        """ Set up the game here. Call this function to restart the game. """
-
+        """ Set up the game here. Call this function to restart the game """
         # Used to keep track of our scrolling
         self.view_bottom = 0
         self.view_left = 0
-
-        # Keep track of the score
-        self.score = 0
 
         # Create the Sprite lists
         self.player_list = arcade.SpriteList()
@@ -223,10 +256,11 @@ class MyGame(arcade.Window):
         self.player_list.append(self.player_sprite)
 
         # --- Load in a map from the tiled editor ---
-
         # Name of the layer in the file that has our platforms/walls
         platforms_layer_name = 'Platforms'
+        # Name of the moving platforms layer
         moving_platforms_layer_name = 'Moving Platforms'
+        # Name of the layer with the items in the foreground
         foreground_layer_name = "Foreground"
         # Name of the layer that has items for pick-up
         coins_layer_name = 'Coins'
@@ -305,7 +339,6 @@ class MyGame(arcade.Window):
 
     def on_draw(self):
         """ Render the screen. """
-
         # Clear the screen to the background color
         arcade.start_render()
 
@@ -320,9 +353,33 @@ class MyGame(arcade.Window):
         self.player_list.draw()
         self.foreground_list.draw()
 
-        # Draw our score on the screen, scrolling it with the viewport
-        score_text = f"Score: {self.score}"
-        arcade.draw_text(score_text, 10 + self.view_left, 10 + self.view_bottom,
+        # Level 1 tutorial
+        if self.level == 1:
+            # Fall tutorial
+            fall_tutorial = f"DON'T FALL OFF THE MAP"
+            arcade.draw_text(fall_tutorial, -300, 500, arcade.csscolor.RED, 18)
+            # Walk tutorial
+            walk_tutorial = f"USE A AND D TO MOVE"
+            arcade.draw_text(walk_tutorial, 300, 800, arcade.csscolor.WHITE, 18)
+            # Jump tutorial
+            jump_tutorial = f"USE W TO JUMP"
+            arcade.draw_text(jump_tutorial, 1950, 800, arcade.csscolor.WHITE, 18)
+            # Spike tutorial
+            spike_tutorial = f"DON'T TOUCH SPIKES"
+            arcade.draw_text(spike_tutorial, 3670, 800, arcade.csscolor.RED, 18)
+            # Door tutorial
+            door_tutorial = f"TOUCH DOORS TO GO TO THE NEXT LEVEL"
+            arcade.draw_text(door_tutorial, 4680, 900, arcade.csscolor.WHITE, 18)
+
+        # Level 2 tutorial
+        if self.level == 2:
+            # Ladder tutorial
+            ladder_tutorial = f"WALK ONTO LADDERS TO USE THEM"
+            arcade.draw_text(ladder_tutorial, 1300, 900, arcade.csscolor.WHITE, 18)
+
+        # Draw the players lives on the screen, scrolling it with the viewport
+        lives_text = f"lives : {self.lives}"
+        arcade.draw_text(lives_text, 10 + self.view_left, 10 + self.view_bottom,
                          arcade.csscolor.WHITE, 18)
 
         # Draw hit boxes.
@@ -332,9 +389,7 @@ class MyGame(arcade.Window):
         # self.player_sprite.draw_hit_box(arcade.color.RED, 3)
 
     def process_keychange(self):
-        """
-        Called when we change a key up/down or we move on/off a ladder.
-        """
+        """ Called when we change a key up/down or we move on/off a ladder """
         # Process up/down
         if self.up_pressed and not self.down_pressed:
             if self.physics_engine.is_on_ladder():
@@ -363,8 +418,7 @@ class MyGame(arcade.Window):
             self.player_sprite.change_x = 0
 
     def on_key_press(self, key, modifiers):
-        """Called whenever a key is pressed. """
-
+        """ Called whenever a key is pressed """
         if key == arcade.key.UP or key == arcade.key.W:
             self.up_pressed = True
         elif key == arcade.key.DOWN or key == arcade.key.S:
@@ -377,8 +431,7 @@ class MyGame(arcade.Window):
         self.process_keychange()
 
     def on_key_release(self, key, modifiers):
-        """Called when the user releases a key. """
-
+        """ Called when the user releases a key """
         if key == arcade.key.UP or key == arcade.key.W:
             self.up_pressed = False
             self.jump_needs_reset = False
@@ -393,7 +446,6 @@ class MyGame(arcade.Window):
 
     def on_update(self, delta_time):
         """ Movement and game logic """
-
         # Move the player with the physics engine
         self.physics_engine.update()
 
@@ -441,7 +493,6 @@ class MyGame(arcade.Window):
                 print("Warning, collected a coin without a Points property.")
             else:
                 points = int(coin.properties['Points'])
-                self.score += points
 
             # Remove the coin
             coin.remove_from_sprite_lists()
@@ -454,7 +505,7 @@ class MyGame(arcade.Window):
         if self.player_sprite.center_y < -100:
             self.player_sprite.center_x = self.PLAYER_START_X
             self.player_sprite.center_y = self.PLAYER_START_Y
-            self.score += 1
+            self.lives -= 1
 
             # Set the camera to the start
             self.view_left = 0
@@ -469,6 +520,7 @@ class MyGame(arcade.Window):
             self.player_sprite.change_y = 0
             self.player_sprite.center_x = self.PLAYER_START_X
             self.player_sprite.center_y = self.PLAYER_START_Y
+            self.lives -= 1
 
             # Set the camera to the start
             self.view_left = 0
@@ -490,8 +542,11 @@ class MyGame(arcade.Window):
             self.view_bottom = 0
             changed_viewport = True
 
-        # --- Manage Scrolling ---
+        if self.lives <= self.death:
+            view = GameOverView()
+            self.window.show_view(view)
 
+        # --- Manage Scrolling ---
         # Scroll left
         left_boundary = self.view_left + LEFT_VIEWPORT_MARGIN
         if self.player_sprite.left < left_boundary:
@@ -531,8 +586,9 @@ class MyGame(arcade.Window):
 
 def main():
     """ Main method """
-    window = MyGame()
-    window.setup(window.level)
+    window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
+    start_view = InstructionView()
+    window.show_view(start_view)
     arcade.run()
 
 

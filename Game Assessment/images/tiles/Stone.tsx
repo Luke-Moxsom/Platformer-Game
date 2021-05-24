@@ -46,8 +46,8 @@
  <tile id="14">
   <image width="128" height="128" source="stoneHill_left.png"/>
   <objectgroup draworder="index" id="2">
-   <object id="1" x="0.255183" y="0.255183">
-    <polygon points="0,0 127.847,127.592 -0.510367,128.102"/>
+   <object id="4" x="-0.281288" y="0">
+    <polygon points="0,0 0.281288,127.142 127.986,127.986"/>
    </object>
   </objectgroup>
  </tile>

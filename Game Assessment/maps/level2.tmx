@@ -6,17 +6,17 @@
  <tileset firstgid="204" source="../images/tiles/Items.tsx"/>
  <layer id="2" name="Background" width="99" height="25">
   <data encoding="base64" compression="zlib">
-   eJztz0EKwCAMBED//zahPsmTUIKIopYeZm4hmmRTAgAAANiXP9pTFneVUD8Hb7mt5YwZ3ka9P+vdPZO39z7+Gc1emQ8AAAAAnFUB48IM6A==
+   eJzt2EsKgCAQAFCP2lG7Qe3TuxSUIJGrAsve2ziKn2EWLiYEAM5SCGOOYxEDfMH2bw2tcwDgHeIxpqZZvM/0wB1qet9cia/mAAAAwC73JJamWfxTjzV/qscVK+tlzcq3avvPZ+jTCqEbEgY=
   </data>
  </layer>
  <layer id="4" name="Don't Touch" width="99" height="25">
   <data encoding="base64" compression="zlib">
-   eJzt0bEJwDAQBMHvvz3ZPagMRwYFMsqew8zAVrBVAAAAAACQay7x7d5En3HoKk+6nF680cODLF7k8CKHDzm8yOJFjr+9eACKIDXg
+   eJztwTEBAAAAwqD1T20KP6AAAAAAAAAAAADgayasAAE=
   </data>
  </layer>
  <layer id="7" name="Do Touch" width="99" height="25">
   <data encoding="base64" compression="zlib">
-   eJztzjEJAAAIADD7h9NKfoK/4LMlWAQAAABwpb4DjPwOAAAAAACwNHLUAZ4=
+   eJztzjEBAAAEADD9w1HJ5+bybAkWAQAAAAAAAACwU98BRn4HAI4aBD8Bng==
   </data>
  </layer>
  <layer id="9" name="Start Block" width="99" height="25">
@@ -26,12 +26,12 @@
  </layer>
  <layer id="3" name="Platforms" width="99" height="25">
   <data encoding="base64" compression="zlib">
-   eJztlTsOwjAQRPcqnIAr5R5pqJC4BW0kPg0RDUWognIqbBkJa/FnHZYoQfOkqRLFOzMrhwgAAAAAAAAAAAAALJ3W6JrRZcKzYjoqzTAV1us6I+7xbNRkdKLxvfj5S86yujENRHv7rYPA3xTauZmoT3i2XlcJSXKQ9pLqRJI/zzumu+mhf3VBLoOqzvjUUp3R4M3l0wi+Lc1bmNHHXjzcfPZZJc26pAdyZ3aDJ/NOl8pLO39fNoMty6CNdBFCIyO/j8GTZgc2Z95DCN6NpB9NbejdB7+bpIS8h2R9afYnOVfSQYpQPzFvdWS20j74LobujRipe0Diq6SjX2X+LaXeQj2kesv1wbMZm4d09+aQeSk5byV7GPu/k3u2uGzmxj/vIQAAAKDJEzbVl0M=
+   eJztmk0KwjAQRudoHqVH61Zw70aw7SbaUzkKgTCMaX7baTIPPrpQbPK9NtUgwDEYgGHFY0zMMUNtHux2eOAxJjOom9I8AS7Y5USDXU85bs4eSZhEJ61EIqZTH1Lp0YdkUp7vZ45k1IUMXvD7nqQuBNDbPaEuZGVvvmtPyB6HukjvMTS+ZwC+Ptpz9ejihrlvJKTHEundBZ33lWTPsbzVRbXfuPiZY8z+X0suFmbvk8vizLPU3LnejdOtxbf/J2mNCu3yX/DZOtG5c+D7BuuDduS7frm+fb374O7Fmi58Y8/psgQrcUGhblL63oL6cF1w589J6bGXZMvFXrjX/yq4r5qoCzlIceGuU+rieOxYWnQRslcxq4sq0O5j9iokYF208L+OnH2iD5m+SF0=
   </data>
  </layer>
  <layer id="5" name="Ladders" width="99" height="25">
   <data encoding="base64" compression="zlib">
-   eJztwTEBAAAAwqD1T20KP6AAAAAAAAAAAADgayasAAE=
+   eJzt0UENACAQwDD8uwNFfM4DS2iTKdhaAAAAAPCvM/HennjPiw4vOrzo8KLDiw4vOrzo8KLDiw4vKLh/KBOb
   </data>
  </layer>
  <layer id="6" name="Coins" width="99" height="25">
@@ -41,7 +41,7 @@
  </layer>
  <layer id="8" name="Foreground" width="99" height="25">
   <data encoding="base64" compression="zlib">
-   eJztz7EJAEAIwED3n86RbJ+vBUHvFgiJAAAAAOiVR5pTLr3+tr5v/QIAAACAVwF+GAQR
+   eJzt2MEJACEMBED7r80O1F4EvxrwOEEfM8+wbPJOSgAAAABE2kamfswzy7cPAAAAAGBY/bdKkK3B/O++k/28pQNv8Aew
   </data>
  </layer>
 </map>
