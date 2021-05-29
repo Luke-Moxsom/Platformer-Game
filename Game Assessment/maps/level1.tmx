@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.6.0" orientation="orthogonal" renderorder="right-down" width="99" height="25" tilewidth="128" tileheight="128" infinite="0" backgroundcolor="#0096c8" nextlayerid="10" nextobjectid="1">
+<map version="1.5" tiledversion="1.6.0" orientation="orthogonal" renderorder="right-down" width="99" height="25" tilewidth="128" tileheight="128" infinite="0" backgroundcolor="#0096c8" nextlayerid="12" nextobjectid="5">
  <tileset firstgid="1" source="../images/tiles/Tile Set.tsx"/>
  <tileset firstgid="146" source="../images/tiles/Dirt.tsx"/>
  <tileset firstgid="185" source="../images/tiles/Stone.tsx"/>
  <tileset firstgid="204" source="../images/tiles/Items.tsx"/>
+ <tileset firstgid="233" source="../images/My Own Tiles/My Own Tile.tsx"/>
  <layer id="2" name="Background" width="99" height="25">
   <data encoding="base64" compression="zlib">
-   eJztz0EKwCAMBED//zahPsmTUIKIopYeZm4hmmRTAgAAANiXP9pTFneVUD8Hb7mt5YwZ3ka9P+vdPZO39z7+Gc1emQ8AAAAAnFUB48IM6A==
+   eJztzjEBAAAMAiD7l1ulxfAQEpAAAAAA7Lh2AAAAAABg1AOkCwDQ
   </data>
  </layer>
  <layer id="4" name="Don't Touch" width="99" height="25">
   <data encoding="base64" compression="zlib">
-   eJzt0bEJwDAQBMHvvz3ZPagMRwYFMsqew8zAVrBVAAAAAACQay7x7d5En3HoKk+6nF680cODLF7k8CKHDzm8yOJFjr+9eACKIDXg
+   eJzt0TERAEAIBDH823sTyKD5Agdckcysgq0CAAAAAIBcvYJU78c9L7J4AQDANrvgBtg=
   </data>
  </layer>
  <layer id="7" name="Do Touch" width="99" height="25">
   <data encoding="base64" compression="zlib">
-   eJztzjEJAAAIADD7h9NKfoK/4LMlWAQAAABwpb4DjPwOAAAAAACwNHLUAZ4=
+   eJzt0TEKwCAUREHvfzgtgvdJZyc24buEGdh+4bUGAAAAfGXcPsDSbx8AgEJzM+o9h1FHixwa5NAihxY5tMiiRQ4tcvytwwumKjMe
   </data>
  </layer>
  <layer id="9" name="Start Block" width="99" height="25">
@@ -26,7 +27,7 @@
  </layer>
  <layer id="3" name="Platforms" width="99" height="25">
   <data encoding="base64" compression="zlib">
-   eJztlTsOwjAQRPcqnIAr5R5pqJC4BW0kPg0RDUWognIqbBkJa/FnHZYoQfOkqRLFOzMrhwgAAAAAAAAAAAAALJ3W6JrRZcKzYjoqzTAV1us6I+7xbNRkdKLxvfj5S86yujENRHv7rYPA3xTauZmoT3i2XlcJSXKQ9pLqRJI/zzumu+mhf3VBLoOqzvjUUp3R4M3l0wi+Lc1bmNHHXjzcfPZZJc26pAdyZ3aDJ/NOl8pLO39fNoMty6CNdBFCIyO/j8GTZgc2Z95DCN6NpB9NbejdB7+bpIS8h2R9afYnOVfSQYpQPzFvdWS20j74LobujRipe0Diq6SjX2X+LaXeQj2kesv1wbMZm4d09+aQeSk5byV7GPu/k3u2uGzmxj/vIQAAAKDJEzbVl0M=
+   eJztlUsOgkAQRNuln6jxE6/HPdy4MvEWXsAbuMCVhlM5EyCObU8zA4MRUy+pFYTpqmqACAAAAAAAAAAAAAAMncWIaK1oOfr+mZIu6cfolTYep0YrRbOO3UgzNZ15pXcVRGf7rF0Lf33oVM5Ed8Vzk8cUqrvROnHz983E8/bpZnq4V11QmUG2p/59WtlzNBXOXC5b9pyJ0UbQOGCGwIw+9uJR7Yu5loVmHdMDlWfmhSNzT67llTp/VzaDI8vAfSfqDuaevU2RkdtH4ShlBzZn3oME7yakn5Q60KsP3oOvA47kXZL1lbK/kHNDOtCQ+vF523tmi+2D76L03fChfQdCfMV01FfmXYn1JvWg9dbUB8+mbR6hu/cLmcfS5C1mD33/dyqvDS6bX+Of9xAAAABIyRNN8FCC
   </data>
  </layer>
  <layer id="5" name="Ladders" width="99" height="25">
@@ -41,7 +42,7 @@
  </layer>
  <layer id="8" name="Foreground" width="99" height="25">
   <data encoding="base64" compression="zlib">
-   eJztz7EJAEAIwED3n86RbJ+vBUHvFgiJAAAAAOiVR5pTLr3+tr5v/QIAAACAVwF+GAQR
+   eJztwTEBAAAAwqD1T20KP6AAAAAAAAAAAADgayasAAE=
   </data>
  </layer>
 </map>

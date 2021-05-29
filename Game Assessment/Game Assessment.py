@@ -56,10 +56,11 @@ class PlayerCharacter(arcade.Sprite):
         self.is_on_ladder = False
 
         # --- Load Textures ---
+        player_idle = "Animations/Idle/Idle1.png"
         main_path = ":resources:images/animated_characters/male_adventurer/maleAdventurer"
 
         # Load textures for idle standing
-        self.idle_texture_pair = load_texture_pair(f"{main_path}_idle.png")
+        self.idle_texture_pair = load_texture_pair(f"{player_idle}")
         self.jump_texture_pair = load_texture_pair(f"{main_path}_jump.png")
         self.fall_texture_pair = load_texture_pair(f"{main_path}_fall.png")
 
@@ -206,6 +207,7 @@ class GameView(arcade.View):
         self.ladder_list = None
         self.player_list = None
         self.enemy_list = None
+        self.text_list = None
 
         self.PLAYER_START_X = SPRITE_PIXEL_SIZE * TILE_SCALING * 2.5
         self.PLAYER_START_Y = SPRITE_PIXEL_SIZE * TILE_SCALING * 13
@@ -231,8 +233,11 @@ class GameView(arcade.View):
         self.death = -1
 
         # Load sounds
+        # Coin sounds
         self.collect_coin_sound = arcade.load_sound(":resources:sounds/coin1.wav")
+        # Jump sound
         self.jump_sound = arcade.load_sound(":resources:sounds/jump1.wav")
+        # Death noise
         self.game_over = arcade.load_sound(":resources:sounds/gameover1.wav")
 
     def setup(self, level):
@@ -247,6 +252,7 @@ class GameView(arcade.View):
         self.background_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.coin_list = arcade.SpriteList()
+        self.text_list = arcade.SpriteList()
 
         # Set up the player, specifically placing it at these coordinates.
         self.player_sprite = PlayerCharacter()
@@ -270,6 +276,8 @@ class GameView(arcade.View):
         do_touch_layer_name = "Do Touch"
         # Name of the layer that has items the player will spawn at
         start_layer_name = "Start Block"
+        # Name of the layer that has text in it
+        text_layer_name = "Text"
 
         # Map name
         map_name = f"maps/level{level}.tmx"
@@ -326,6 +334,12 @@ class GameView(arcade.View):
                                                        TILE_SCALING,
                                                        use_spatial_hash=True)
 
+        # -- Text
+        self.text_list = arcade.tilemap.process_layer(my_map,
+                                                      text_layer_name,
+                                                      TILE_SCALING,
+                                                      use_spatial_hash=True)
+
         # --- Other stuff
         # Set the background color
         if my_map.background_color:
@@ -338,12 +352,13 @@ class GameView(arcade.View):
                                                              ladders=self.ladder_list)
 
     def on_draw(self):
-        """ Render the screen. """
+        """ Render the screen """
         # Clear the screen to the background color
         arcade.start_render()
 
         # Draw our sprites
         self.background_list.draw()
+        self.text_list.draw()
         self.dont_touch_list.draw()
         self.do_touch_list.draw()
         self.start_list.draw()
