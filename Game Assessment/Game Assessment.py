@@ -1,5 +1,5 @@
+# Import variables
 import math
-
 import arcade
 import os
 
@@ -9,7 +9,7 @@ SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Game Assessment"
 
 # Constants used to scale our sprites from their original size
-SPRITE_SCALING = 0.5
+SPRITE_SCALING = 0.3
 SPRITE_NATIVE_SIZE = 128
 SPRITE_SIZE = int(SPRITE_NATIVE_SIZE * SPRITE_SCALING / 100)
 SPRITE_SCALING_LASER = 0.8
@@ -135,21 +135,18 @@ class InstructionView(arcade.View):
 
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
 
     def on_draw(self):
         """ Draw this view """
         arcade.start_render()
-        arcade.draw_text("Test Starting Screen", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+        arcade.draw_text("Play", 500, 1000,
                          arcade.color.WHITE, font_size=50, anchor_x="center")
         arcade.draw_text("Click To Start The Game", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
                          arcade.color.WHITE, font_size=20, anchor_x="center")
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """ If the user presses the mouse button, start the game """
-        game_view = GameView()
-        game_view.setup(1)
-        self.window.show_view(game_view)
 
 
 class GameOverView(arcade.View):
@@ -199,7 +196,7 @@ class GameView(arcade.View):
 
         # These are 'lists' that keep track of our sprites. Each sprite should
         # go into a list.
-        self.coin_list = None
+        self.slime_list = None
         self.wall_list = None
         self.foreground_list = None
         self.background_list = None
@@ -211,7 +208,7 @@ class GameView(arcade.View):
         self.enemy_list = None
         self.text_list = None
         self.bullet_list = None
-        self.enemy_list = None
+        self.enemy_turn_list = None
 
         # Where the player starts
         self.PLAYER_START_X = 150
@@ -239,8 +236,6 @@ class GameView(arcade.View):
         self.death = -1
 
         # Load sounds
-        # Coin sounds
-        self.collect_coin_sound = arcade.load_sound(":resources:sounds/coin1.wav")
         # Jump sound
         self.jump_sound = arcade.load_sound(":resources:sounds/jump1.wav")
         # Death noise
@@ -261,26 +256,21 @@ class GameView(arcade.View):
         self.foreground_list = arcade.SpriteList()
         self.background_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
-        self.coin_list = arcade.SpriteList()
+        self.slime_list = arcade.SpriteList()
         self.text_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
         self.enemy_list = arcade.SpriteList()
+        self.enemy_turn_list = arcade.SpriteList()
 
         # Draw an enemy on the ground
         enemy = arcade.Sprite("images/enemies/slimeBlue.png", SPRITE_SCALING)
 
-        enemy.bottom = SPRITE_SIZE
+        enemy.bottom = 470
         enemy.left = SPRITE_SIZE * 2
 
         # Set enemy speed
         enemy.change_x = 2
         self.enemy_list.append(enemy)
-
-        # Draw an enemy on the platforms
-        enemy = arcade.Sprite("images/enemies/slimeBlue.png", SPRITE_SCALING)
-
-        enemy.bottom = 480
-        enemy.left = SPRITE_SIZE * 4
 
         # Set boundaries on the left/right of enemy
         enemy.boundary_right = SPRITE_SIZE * 8
@@ -303,8 +293,6 @@ class GameView(arcade.View):
         moving_platforms_layer_name = 'Moving Platforms'
         # Name of the layer with the items in the foreground
         foreground_layer_name = "Foreground"
-        # Name of the layer that has items for pick-up
-        coins_layer_name = 'Coins'
         # Name of the layer that has items we shouldn't touch
         dont_touch_layer_name = "Don't Touch"
         # Name of the layer that has items the player has to touch to win
@@ -313,6 +301,8 @@ class GameView(arcade.View):
         start_layer_name = "Start Block"
         # Name of the layer that has text in it
         text_layer_name = "Text"
+        # Name of the layer that turns a enemy when it hits it.
+        enemy_turn_name = "Enemy Turn"
 
         # Map name
         map_name = f"maps/level{level}.tmx"
@@ -340,17 +330,18 @@ class GameView(arcade.View):
         self.ladder_list = arcade.tilemap.process_layer(my_map, "Ladders",
                                                         TILE_SCALING,
                                                         use_spatial_hash=True)
-
-        # -- Coins
-        self.coin_list = arcade.tilemap.process_layer(my_map, coins_layer_name,
-                                                      TILE_SCALING,
-                                                      use_spatial_hash=True)
         
         # -- Platforms
         self.wall_list = arcade.tilemap.process_layer(my_map,
                                                       platforms_layer_name,
                                                       TILE_SCALING,
                                                       use_spatial_hash=True)
+
+        # -- Enemy Turn Blocks
+        self.enemy_turn_list = arcade.tilemap.process_layer(my_map,
+                                                            enemy_turn_name,
+                                                            TILE_SCALING,
+                                                            use_spatial_hash=True)
 
         # -- Don't Touch Layer
         self.dont_touch_list = arcade.tilemap.process_layer(my_map,
@@ -400,11 +391,11 @@ class GameView(arcade.View):
         self.start_list.draw()
         self.wall_list.draw()
         self.ladder_list.draw()
-        self.coin_list.draw()
         self.player_list.draw()
         self.foreground_list.draw()
-        self.bullet_list.draw()
         self.enemy_list.draw()
+        self.bullet_list.draw()
+        self.enemy_turn_list.draw()
 
         # Level 1 tutorial
         if self.level == 1:
@@ -536,15 +527,12 @@ class GameView(arcade.View):
         """ Movement and game logic """
 
         # Move the enemy
-        self.enemy_list.update()
+        self.enemy_list.draw()
 
         # Check each enemy
         for enemy in self.enemy_list:
-            # If enemy hits wall reverse, reverse
-            if len(arcade.check_for_collision_with_list(enemy, self.wall_list)) > 0:
-                enemy.change_x *= -1
             # If enemy hits left boundary, reverse
-            elif enemy.boundary_left is not None and enemy.left < enemy.boundary_left:
+            if enemy.boundary_left is not None and enemy.left < enemy.boundary_left:
                 enemy.change_x *= -1
             # If enemy hits right boundary, reverse
             elif enemy.boundary_right is not None and enemy.right > enemy.boundary_right:
@@ -583,7 +571,7 @@ class GameView(arcade.View):
             self.player_sprite.is_on_ladder = False
             self.process_keychange()
 
-        self.coin_list.update_animation(delta_time)
+        self.slime_list.update_animation(delta_time)
         self.background_list.update_animation(delta_time)
         self.player_list.update_animation(delta_time)
 
@@ -601,23 +589,6 @@ class GameView(arcade.View):
                 wall.change_y *= -1
             if wall.boundary_bottom and wall.bottom < wall.boundary_bottom and wall.change_y < 0:
                 wall.change_y *= -1
-
-        # See if we hit any coins
-        coin_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
-                                                             self.coin_list)
-
-        # Loop through each coin we hit (if any) and remove it
-        for coin in coin_hit_list:
-
-            # Figure out how many points this coin is worth
-            if 'Points' not in coin.properties:
-                print("Warning, collected a coin without a Points property.")
-            else:
-                points = int(coin.properties['Points'])
-
-            # Remove the coin
-            coin.remove_from_sprite_lists()
-            arcade.play_sound(self.collect_coin_sound)
 
         # Track if we need to change the viewport
         changed_viewport = False
@@ -712,7 +683,7 @@ class GameView(arcade.View):
 def main():
     """ Main method """
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    start_view = InstructionView()
+    start_view = GameView()
     window.show_view(start_view)
     arcade.run()
 
