@@ -3,25 +3,25 @@ import math
 import arcade
 import os
 
-# Constants
+# Window variables
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 SCREEN_TITLE = "Game Assessment"
 
-# Constants used to scale our sprites from their original size
+# Sprite scaling constants
 SPRITE_SCALING = 0.3
 SPRITE_NATIVE_SIZE = 128
 SPRITE_SIZE = int(SPRITE_NATIVE_SIZE * SPRITE_SCALING / 100)
-SPRITE_SCALING_LASER = 0.8
+SPRITE_SCALING_LASER = 0.4
 TILE_SCALING = (SPRITE_SCALING / 1.6)
 
-# Movement speed of player, in pixels per frame
-PLAYER_MOVEMENT_SPEED = 7
+# Player movement speed (pixels per frame)
+PLAYER_MOVEMENT_SPEED = 5
 GRAVITY = 1.5
 PLAYER_JUMP_SPEED = 25
 BULLET_SPEED = 10
 
-# How many pixels to keep as a minimum margin between the character and the edge of the screen.
+# Boundaries of the scrolling screen
 LEFT_VIEWPORT_MARGIN = 680
 RIGHT_VIEWPORT_MARGIN = 680
 BOTTOM_VIEWPORT_MARGIN = 360
@@ -41,7 +41,7 @@ def load_texture_pair(filename):
 
 
 class PlayerCharacter(arcade.Sprite):
-    """ Player Sprite"""
+    """ Player Sprite """
     def __init__(self):
         # Set up parent class
         super().__init__()
@@ -58,7 +58,7 @@ class PlayerCharacter(arcade.Sprite):
         self.climbing = False
         self.is_on_ladder = False
 
-        # --- Load Textures ---
+        # Player sprite main path
         main_path = "images/player_1/zombie"
 
         # Load textures for idle standing
@@ -129,9 +129,15 @@ class PlayerCharacter(arcade.Sprite):
 
 class InstructionView(arcade.View):
     """ View to show instructions """
-    def on_show(self):
-        """ This is run once when we switch to this view """
-        arcade.set_background_color(arcade.csscolor.BLACK)
+    def __init__(self):
+        # Set up parent class
+        super().__init__()
+
+        # Variables
+        self.selected = 1
+
+        # Draw picture for background of the view port
+        self.texture = arcade.load_texture("images/Title.png")
 
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.
@@ -140,13 +146,57 @@ class InstructionView(arcade.View):
     def on_draw(self):
         """ Draw this view """
         arcade.start_render()
-        arcade.draw_text("Play", 500, 1000,
-                         arcade.color.WHITE, font_size=50, anchor_x="center")
-        arcade.draw_text("Click To Start The Game", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2-75,
-                         arcade.color.WHITE, font_size=20, anchor_x="center")
+        self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+                                SCREEN_WIDTH, SCREEN_HEIGHT)
+        if self.selected == 1:
+            arcade.draw_text("Play", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 2.5,
+                             arcade.color.YELLOW, font_size=60, anchor_x="center")
+        else:
+            arcade.draw_text("Play", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 2.5,
+                             arcade.color.WHITE, font_size=50, anchor_x="center")
 
-    def on_mouse_press(self, _x, _y, _button, _modifiers):
-        """ If the user presses the mouse button, start the game """
+        if self.selected == 2:
+            arcade.draw_text("Settings", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 4,
+                             arcade.color.YELLOW, font_size=60, anchor_x="center")
+        else:
+            arcade.draw_text("Settings", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 4,
+                             arcade.color.WHITE, font_size=50, anchor_x="center")
+
+        if self.selected == 3:
+            arcade.draw_text("Quit", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 10.5,
+                             arcade.color.YELLOW, font_size=60, anchor_x="center")
+        else:
+            arcade.draw_text("Quit", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 10.5,
+                             arcade.color.WHITE, font_size=50, anchor_x="center")
+
+        arcade.draw_text("Yep This is a Game", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
+                         arcade.color.WHITE, font_size=70, anchor_x="center")
+
+    def on_key_press(self, key, modifiers):
+        """ Check what button the user is hovering """
+
+        if key == arcade.key.W:
+            if self.selected >= 2:
+                self.selected -= 1
+            else:
+                self.selected -= 0
+
+        elif key == arcade.key.S:
+            if self.selected <= 2:
+                self.selected += 1
+            else:
+                self.selected += 0
+
+        if key == arcade.key.ENTER:
+            if self.selected == 1:
+                print("Play")
+                game_view = GameView()
+                game_view.setup(1)
+                self.window.show_view(game_view)
+            elif self.selected == 2:
+                print("Settings")
+            elif self.selected == 3:
+                print("Quit")
 
 
 class GameOverView(arcade.View):
@@ -397,40 +447,10 @@ class GameView(arcade.View):
         self.bullet_list.draw()
         self.enemy_turn_list.draw()
 
-        # Level 1 tutorial
-        if self.level == 1:
-            # Fall tutorial
-            fall_tutorial = f"DON'T FALL OFF THE MAP"
-            arcade.draw_text(fall_tutorial, -300, 500, arcade.csscolor.RED, 18)
-            # Walk tutorial
-            walk_tutorial = f"USE A AND D TO MOVE"
-            arcade.draw_text(walk_tutorial, 300, 800, arcade.csscolor.WHITE, 18)
-            # Jump tutorial
-            jump_tutorial = f"USE W TO JUMP"
-            arcade.draw_text(jump_tutorial, 1950, 800, arcade.csscolor.WHITE, 18)
-            # Spike tutorial
-            spike_tutorial = f"DON'T TOUCH SPIKES"
-            arcade.draw_text(spike_tutorial, 3670, 800, arcade.csscolor.RED, 18)
-            # Door tutorial
-            door_tutorial = f"TOUCH DOORS TO GO TO THE NEXT LEVEL"
-            arcade.draw_text(door_tutorial, 4680, 900, arcade.csscolor.WHITE, 18)
-
-        # Level 2 tutorial
-        if self.level == 2:
-            # Ladder tutorial
-            ladder_tutorial = f"WALK ONTO LADDERS TO USE THEM"
-            arcade.draw_text(ladder_tutorial, 1300, 900, arcade.csscolor.WHITE, 18)
-
         # Draw the players lives on the screen, scrolling it with the viewport
         lives_text = f"lives : {self.lives}"
         arcade.draw_text(lives_text, 10 + self.view_left, 10 + self.view_bottom,
                          arcade.csscolor.WHITE, 18)
-
-        # Draw hit boxes.
-        # for wall in self.wall_list:
-        #     wall.draw_hit_box(arcade.color.BLACK, 3)
-        #
-        # self.player_sprite.draw_hit_box(arcade.color.RED, 3)
 
     def process_keychange(self):
         """ Called when we change a key up/down or we move on/off a ladder """
@@ -462,9 +482,7 @@ class GameView(arcade.View):
             self.player_sprite.change_x = 0
 
     def on_mouse_press(self, x, y, button, modifiers):
-        """
-        CALLED WHEN MOUSE IS CLICKED
-        """
+        """ Called when the mouse is clicked """
         # Gunshot sound
         arcade.play_sound(self.gun_sound)
         # Create a bullet
@@ -525,9 +543,9 @@ class GameView(arcade.View):
 
     def on_update(self, delta_time):
         """ Movement and game logic """
-
         # Move the enemy
-        self.enemy_list.draw()
+        self.enemy_list.update()
+        self.bullet_list.update()
 
         # Check each enemy
         for enemy in self.enemy_list:
@@ -538,14 +556,16 @@ class GameView(arcade.View):
             elif enemy.boundary_right is not None and enemy.right > enemy.boundary_right:
                 enemy.change_x *= -1
 
-        # Call update on bullet sprites
-        self.bullet_list.update()
+            hit_list = arcade.check_for_collision_with_list(enemy, self.bullet_list)
+
+            if len(hit_list) > 0:
+                enemy.remove_from_sprite_lists()
 
         # Loops through each bullet
         for bullet in self.bullet_list:
 
             # Check if bullet hit a wall
-            hit_list = arcade.check_for_collision_with_list(bullet, self.wall_list)
+            hit_list = arcade.check_for_collision_with_list(bullet, self.wall_list and self.enemy_list)
 
             # If bullet did hit then remove from list
             if len(hit_list) > 0:
@@ -683,7 +703,7 @@ class GameView(arcade.View):
 def main():
     """ Main method """
     window = arcade.Window(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_TITLE)
-    start_view = GameView()
+    start_view = InstructionView()
     window.show_view(start_view)
     arcade.run()
 
