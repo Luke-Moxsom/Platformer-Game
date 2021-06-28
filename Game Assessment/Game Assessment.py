@@ -150,24 +150,24 @@ class InstructionView(arcade.View):
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
         if self.selected == 1:
             arcade.draw_text("Play", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 2.5,
-                             arcade.color.YELLOW, font_size=60, anchor_x="center")
+                             arcade.color.RED, font_size=60, anchor_x="center")
         else:
             arcade.draw_text("Play", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 2.5,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
 
         if self.selected == 2:
             arcade.draw_text("Settings", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 4,
-                             arcade.color.YELLOW, font_size=60, anchor_x="center")
+                             arcade.color.RED, font_size=60, anchor_x="center")
         else:
             arcade.draw_text("Settings", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 4,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
 
         if self.selected == 3:
             arcade.draw_text("Quit", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 10.5,
-                             arcade.color.YELLOW, font_size=60, anchor_x="center")
+                             arcade.color.WHITE, font_size=60, anchor_x="center")
         else:
             arcade.draw_text("Quit", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 10.5,
-                             arcade.color.WHITE, font_size=50, anchor_x="center")
+                             arcade.color.RED, font_size=50, anchor_x="center")
 
         arcade.draw_text("Yep This is a Game", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
                          arcade.color.WHITE, font_size=70, anchor_x="center")
