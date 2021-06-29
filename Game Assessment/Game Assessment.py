@@ -18,7 +18,7 @@ TILE_SCALING = (SPRITE_SCALING / 1.6)
 # Player movement speed (pixels per frame)
 PLAYER_MOVEMENT_SPEED = 5
 GRAVITY = 1.5
-PLAYER_JUMP_SPEED = 25
+PLAYER_JUMP_SPEED = 20
 BULLET_SPEED = 10
 
 # Boundaries of the scrolling screen
@@ -127,14 +127,14 @@ class PlayerCharacter(arcade.Sprite):
         self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
 
 
-class InstructionView(arcade.View):
+class GameOverView(arcade.View):
     """ View to show instructions """
     def __init__(self):
         # Set up parent class
         super().__init__()
 
         # Variables
-        self.selected = 1
+        self.selected = 0
 
         # Draw picture for background of the view port
         self.texture = arcade.load_texture("images/Title.png")
@@ -146,80 +146,156 @@ class InstructionView(arcade.View):
     def on_draw(self):
         """ Draw this view """
         arcade.start_render()
+
+        # Reset viewport
+        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
+
+        # Draw text on title screen
         self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
         if self.selected == 1:
-            arcade.draw_text("Play", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 2.5,
-                             arcade.color.RED, font_size=60, anchor_x="center")
+            arcade.draw_text("Continue", 225, 285,
+                             arcade.color.WHITE, font_size=60, anchor_x="center")
         else:
-            arcade.draw_text("Play", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 2.5,
+            arcade.draw_text("Continue", 225, 285,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
 
         if self.selected == 2:
-            arcade.draw_text("Settings", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 4,
-                             arcade.color.RED, font_size=60, anchor_x="center")
+            arcade.draw_text("Settings", 225, 180,
+                             arcade.color.WHITE, font_size=60, anchor_x="center")
         else:
-            arcade.draw_text("Settings", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 4,
+            arcade.draw_text("Settings", 225, 180,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
 
         if self.selected == 3:
-            arcade.draw_text("Quit", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 10.5,
+            arcade.draw_text("Quit", 225, 75,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
         else:
-            arcade.draw_text("Quit", SCREEN_WIDTH / 6, SCREEN_HEIGHT / 10.5,
-                             arcade.color.RED, font_size=50, anchor_x="center")
+            arcade.draw_text("Quit", 225, 75,
+                             arcade.color.WHITE, font_size=50, anchor_x="center")
 
-        arcade.draw_text("Yep This is a Game", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
+        arcade.draw_text("Lol you died", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
                          arcade.color.WHITE, font_size=70, anchor_x="center")
 
-    def on_key_press(self, key, modifiers):
-        """ Check what button the user is hovering """
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        """ Contains where the mouse is """
+        if 80 < x < 370 and 275 < y < 365:
+            # Play
+            self.selected = 1
 
-        if key == arcade.key.W:
-            if self.selected >= 2:
-                self.selected -= 1
-            else:
-                self.selected -= 0
+        if 100 < x < 350 and 170 < y < 270:
+            # Settings
+            self.selected = 2
 
-        elif key == arcade.key.S:
-            if self.selected <= 2:
-                self.selected += 1
-            else:
-                self.selected += 0
+        if 150 < x < 300 and 75 < y < 180:
+            # Quit
+            self.selected = 3
 
-        if key == arcade.key.ENTER:
-            if self.selected == 1:
-                print("Play")
-                game_view = GameView()
-                game_view.setup(1)
-                self.window.show_view(game_view)
-            elif self.selected == 2:
-                print("Settings")
-            elif self.selected == 3:
-                print("Quit")
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        """ If the user clicks on a button, this is called """
+        if 150 < _x < 300 and 275 < _y < 365:
+            # Play
+            print("Continue")
+            game_view = GameView()
+            game_view.setup(1)
+            self.window.show_view(game_view)
+            self.selected = 1
+
+        if 100 < _x < 350 and 170 < _y < 270:
+            # Settings
+            print("Settings")
+            self.selected = 2
+
+        if 150 < _x < 300 and 75 < _y < 180:
+            # Quit
+            print("Quit")
+            arcade.close_window()
+            self.selected = 3
 
 
-class GameOverView(arcade.View):
-    """ View to show when game is over """
+class InstructionView(arcade.View):
+    """ View to show instructions """
     def __init__(self):
-        """ This is run once when we switch to this view """
+        # Set up parent class
         super().__init__()
-        arcade.set_background_color(arcade.csscolor.RED)
+
+        # Variables
+        self.selected = 0
+
+        # Draw picture for background of the view port
+        self.texture = arcade.load_texture("images/Title.png")
 
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.
-        arcade.set_viewport(0, SCREEN_WIDTH - 1, 0, SCREEN_HEIGHT - 1)
+        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
 
     def on_draw(self):
         """ Draw this view """
         arcade.start_render()
-        arcade.draw_text("Test Death Screen", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
-                         arcade.color.WHITE, font_size=50, anchor_x="center")
-        arcade.draw_text("Click (Does Nothing Currently)", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2 - 75,
-                         arcade.color.WHITE, font_size=20, anchor_x="center")
+
+        # Reset viewport
+        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
+
+        # Draw text on title screen
+        self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
+                                SCREEN_WIDTH, SCREEN_HEIGHT)
+        if self.selected == 1:
+            arcade.draw_text("Play", 225, 285,
+                             arcade.color.WHITE, font_size=60, anchor_x="center")
+        else:
+            arcade.draw_text("Play", 225, 285,
+                             arcade.color.WHITE, font_size=50, anchor_x="center")
+
+        if self.selected == 2:
+            arcade.draw_text("Settings", 225, 180,
+                             arcade.color.WHITE, font_size=60, anchor_x="center")
+        else:
+            arcade.draw_text("Settings", 225, 180,
+                             arcade.color.WHITE, font_size=50, anchor_x="center")
+
+        if self.selected == 3:
+            arcade.draw_text("Quit", 225, 75,
+                             arcade.color.WHITE, font_size=60, anchor_x="center")
+        else:
+            arcade.draw_text("Quit", 225, 75,
+                             arcade.color.WHITE, font_size=50, anchor_x="center")
+
+        arcade.draw_text("Yep This is a Game", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
+                         arcade.color.WHITE, font_size=70, anchor_x="center")
+
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        """ Contains where the mouse is """
+        if 150 < x < 300 and 275 < y < 365:
+            # Play
+            self.selected = 1
+
+        if 100 < x < 350 and 170 < y < 270:
+            # Settings
+            self.selected = 2
+
+        if 150 < x < 300 and 75 < y < 180:
+            # Quit
+            self.selected = 3
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
-        """ If the user presses the mouse button, re-start the game """
+        """ If the user clicks on a button, this is called """
+        if 150 < _x < 300 and 275 < _y < 365:
+            # Play
+            print("Play")
+            game_view = GameView()
+            game_view.setup(1)
+            self.window.show_view(game_view)
+
+        if 100 < _x < 350 and 170 < _y < 270:
+            # Setting
+            print("Settings")
+            self.selected = 2
+
+        if 150 < _x < 300 and 75 < _y < 180:
+            # Quit
+            print("Quit")
+            arcade.close_window()
+            self.selected = 3
 
 
 class GameView(arcade.View):
@@ -261,8 +337,8 @@ class GameView(arcade.View):
         self.enemy_turn_list = None
 
         # Where the player starts
-        self.PLAYER_START_X = 150
-        self.PLAYER_START_Y = 2000
+        self.PLAYER_START_X = 100
+        self.PLAYER_START_Y = 250
 
         # Separate variable that holds the player sprite
         self.player_sprite = None
