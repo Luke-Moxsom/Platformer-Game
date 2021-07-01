@@ -12,7 +12,7 @@ SCREEN_TITLE = "Game Assessment"
 SPRITE_SCALING = 0.3
 SPRITE_NATIVE_SIZE = 128
 SPRITE_SIZE = int(SPRITE_NATIVE_SIZE * SPRITE_SCALING / 100)
-SPRITE_SCALING_LASER = 0.4
+SPRITE_SCALING_LASER = 0.5
 TILE_SCALING = (SPRITE_SCALING / 1.6)
 
 # Player movement speed (pixels per frame)
@@ -127,6 +127,62 @@ class PlayerCharacter(arcade.Sprite):
         self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
 
 
+class SettingsView(arcade.View):
+    """ View that shows the settings view """
+    def __init__(self):
+        # Set up parent class
+        super().__init__()
+
+        # Variables
+        self.selected = 0
+
+        # Draw picture for background of the view
+        arcade.set_background_color(arcade.csscolor.BLACK)
+
+        # Reset the viewport, necessary if we have a scrolling game and we need
+        # to reset the viewport back to the start so we can see what we draw.
+        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
+
+    def on_draw(self):
+        """ Draw this view """
+        arcade.start_render()
+
+        # Reset viewport
+        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
+
+        # Draw text on the screen
+        # Draw the title
+        arcade.draw_text("You thought I was good\nenough to make settings", SCREEN_WIDTH / 2, 500,
+                         arcade.color.WHITE, font_size=50, anchor_x="center")
+
+        # Draw buttons
+        if self.selected == 1:
+            arcade.draw_text("Back", SCREEN_WIDTH / 2, 100,
+                             arcade.color.WHITE, font_size=60, anchor_x="center")
+        else:
+            arcade.draw_text("Back", SCREEN_WIDTH / 2, 100,
+                             arcade.color.WHITE, font_size=50, anchor_x="center")
+
+    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
+        """ Contains where the mouse is """
+        if not 500 < x < 700 and not 80 < y < 180:
+            # Select nothing
+            self.selected = 0
+
+        elif 550 < x < 650 and 80 < y < 180:
+            # Play
+            self.selected = 1
+
+    def on_mouse_press(self, _x, _y, _button, _modifiers):
+        """ If the user clicks on a button, this is called """
+        if 500 < _x < 700 and 80 < _y < 180:
+            # Back
+            print("Back")
+            game_view = InstructionView()
+            self.window.show_view(game_view)
+            self.selected = 1
+
+
 class GameOverView(arcade.View):
     """ View to show instructions """
     def __init__(self):
@@ -180,7 +236,7 @@ class GameOverView(arcade.View):
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """ Contains where the mouse is """
         if 80 < x < 370 and 275 < y < 365:
-            # Play
+            # Continue
             self.selected = 1
 
         if 100 < x < 350 and 170 < y < 270:
@@ -194,7 +250,7 @@ class GameOverView(arcade.View):
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """ If the user clicks on a button, this is called """
         if 150 < _x < 300 and 275 < _y < 365:
-            # Play
+            # Continue
             print("Continue")
             game_view = GameView()
             game_view.setup(1)
@@ -289,6 +345,8 @@ class InstructionView(arcade.View):
         if 100 < _x < 350 and 170 < _y < 270:
             # Setting
             print("Settings")
+            game_view = SettingsView()
+            self.window.show_view(game_view)
             self.selected = 2
 
         if 150 < _x < 300 and 75 < _y < 180:
@@ -356,8 +414,7 @@ class GameView(arcade.View):
         # Level
         self.level = 1
 
-        # Keep track of the players lives
-        # Change lives
+        # This keeps track of how many live the player has/how they have to have to die
         self.lives = 3
         self.death = -1
 
@@ -388,19 +445,15 @@ class GameView(arcade.View):
         self.enemy_list = arcade.SpriteList()
         self.enemy_turn_list = arcade.SpriteList()
 
-        # Draw an enemy on the ground
-        enemy = arcade.Sprite("images/enemies/slimeBlue.png", SPRITE_SCALING)
+        # -- Draw an enemy on the ground
+        enemy = arcade.Sprite(":resources:images/enemies/wormGreen.png", SPRITE_SCALING)
 
-        enemy.bottom = 470
-        enemy.left = SPRITE_SIZE * 2
+        enemy.bottom = 287
+        enemy.left = 288
 
-        # Set enemy speed
-        enemy.change_x = 2
-        self.enemy_list.append(enemy)
-
-        # Set boundaries on the left/right of enemy
-        enemy.boundary_right = SPRITE_SIZE * 8
-        enemy.boundary_left = SPRITE_SIZE * 3
+        # Set boundaries on the left/right the enemy can't cross
+        enemy.boundary_right = 500
+        enemy.boundary_left = 0
         enemy.change_x = 2
         self.enemy_list.append(enemy)
 
@@ -438,11 +491,6 @@ class GameView(arcade.View):
 
         # Calculate the right edge of the my_map in pixels
         self.end_of_map = my_map.map_size.width * SPRITE_SCALING - 185
-
-        # -- Moving Platforms
-        moving_platforms_list = arcade.tilemap.process_layer(my_map, moving_platforms_layer_name, TILE_SCALING)
-        for sprite in moving_platforms_list:
-            self.wall_list.append(sprite)
 
         # -- Foreground
         self.foreground_list = arcade.tilemap.process_layer(my_map,
@@ -515,13 +563,12 @@ class GameView(arcade.View):
         self.dont_touch_list.draw()
         self.do_touch_list.draw()
         self.start_list.draw()
+        self.bullet_list.draw()
         self.wall_list.draw()
         self.ladder_list.draw()
         self.player_list.draw()
         self.foreground_list.draw()
         self.enemy_list.draw()
-        self.bullet_list.draw()
-        self.enemy_turn_list.draw()
 
         # Draw the players lives on the screen, scrolling it with the viewport
         lives_text = f"lives : {self.lives}"
@@ -620,20 +667,28 @@ class GameView(arcade.View):
     def on_update(self, delta_time):
         """ Movement and game logic """
         # Move the enemy
-        self.enemy_list.update()
         self.bullet_list.update()
+
+        # Moves the enemy
+        self.enemy_list.update()
 
         # Check each enemy
         for enemy in self.enemy_list:
-            # If enemy hits left boundary, reverse
-            if enemy.boundary_left is not None and enemy.left < enemy.boundary_left:
+
+            # If the enemy hit a wall, reverse
+            if len(arcade.check_for_collision_with_list(enemy, self.wall_list)) > 0:
                 enemy.change_x *= -1
-            # If enemy hits right boundary, reverse
+            # If the enemy hit the left boundary, reverse
+            elif enemy.boundary_left is not None and enemy.left < enemy.boundary_left:
+                enemy.change_x *= -1
+            # If the enemy hit the right boundary, reverse
             elif enemy.boundary_right is not None and enemy.right > enemy.boundary_right:
                 enemy.change_x *= -1
 
+            # Checks if enemy is hit by bullet
             hit_list = arcade.check_for_collision_with_list(enemy, self.bullet_list)
 
+            # If enemy is hit by bullet, delete the enemy
             if len(hit_list) > 0:
                 enemy.remove_from_sprite_lists()
 

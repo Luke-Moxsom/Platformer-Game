@@ -1,10 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.5" tiledversion="1.6.0" orientation="orthogonal" renderorder="right-down" width="99" height="25" tilewidth="128" tileheight="128" infinite="0" backgroundcolor="#0096c8" nextlayerid="14" nextobjectid="11">
+<map version="1.5" tiledversion="1.6.0" orientation="orthogonal" renderorder="right-down" width="99" height="25" tilewidth="128" tileheight="128" infinite="0" backgroundcolor="#0096c8" nextlayerid="15" nextobjectid="11">
  <tileset firstgid="1" source="../images/tiles/Tile Set.tsx"/>
  <tileset firstgid="146" source="../images/tiles/Dirt.tsx"/>
  <tileset firstgid="185" source="../images/tiles/Stone.tsx"/>
  <tileset firstgid="204" source="../images/tiles/Items.tsx"/>
  <tileset firstgid="233" source="../images/My Own Tiles/My Own Tile.tsx"/>
+ <layer id="14" name="Enemy Turn" width="99" height="25">
+  <data encoding="base64" compression="zlib">
+   eJztyTENAAAIA7Apwb9MRIyLtG8TAAAAAPhpygcAAAAA7izAaAA9
+  </data>
+ </layer>
  <layer id="2" name="Background" width="99" height="25">
   <data encoding="base64" compression="zlib">
    eJztzjEBAAAMAiD7l1ulxfAQEpAAAAAA7Lh2AAAAAABg1AOkCwDQ
