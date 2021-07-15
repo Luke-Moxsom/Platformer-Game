@@ -51,7 +51,6 @@ class PlayerCharacter(arcade.Sprite):
 
         # Used for flipping between image sequences
         self.cur_texture = 0
-        self.scale = SPRITE_SCALING
 
         # Track our state
         self.jumping = False
@@ -295,6 +294,9 @@ class InstructionView(arcade.View):
         # Draw text on title screen
         self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
+
+        arcade.draw_rectangle_filled(225, 320, 150, 90, (255, 255, 255, 50), 0)
+
         if self.selected == 1:
             arcade.draw_text("Play", 225, 285,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
@@ -396,7 +398,7 @@ class GameView(arcade.View):
 
         # Where the player starts
         self.PLAYER_START_X = 100
-        self.PLAYER_START_Y = 250
+        self.PLAYER_START_Y = 500
 
         # Separate variable that holds the player sprite
         self.player_sprite = None
@@ -415,7 +417,7 @@ class GameView(arcade.View):
         self.level = 1
 
         # This keeps track of how many live the player has/how they have to have to die
-        self.lives = 3
+        self.ammo = 3
         self.death = -1
 
         # Load sounds
@@ -446,13 +448,13 @@ class GameView(arcade.View):
         self.enemy_turn_list = arcade.SpriteList()
 
         # -- Draw an enemy on the ground
-        enemy = arcade.Sprite(":resources:images/enemies/wormGreen.png", SPRITE_SCALING)
+        enemy = arcade.Sprite(":resources:images/enemies/ladybug.png", SPRITE_SCALING)
 
-        enemy.bottom = 287
+        enemy.bottom = 300
         enemy.left = 288
 
         # Set boundaries on the left/right the enemy can't cross
-        enemy.boundary_right = 500
+        enemy.boundary_right = 1000
         enemy.boundary_left = 0
         enemy.change_x = 2
         self.enemy_list.append(enemy)
@@ -570,9 +572,9 @@ class GameView(arcade.View):
         self.foreground_list.draw()
         self.enemy_list.draw()
 
-        # Draw the players lives on the screen, scrolling it with the viewport
-        lives_text = f"lives : {self.lives}"
-        arcade.draw_text(lives_text, 10 + self.view_left, 10 + self.view_bottom,
+        # Draw the players ammo/lives on the screen, scrolling it with the viewport
+        ammo_text = f"ammo : {self.ammo}"
+        arcade.draw_text(ammo_text, 10 + self.view_left, 10 + self.view_bottom,
                          arcade.csscolor.WHITE, 18)
 
     def process_keychange(self):
@@ -606,10 +608,19 @@ class GameView(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):
         """ Called when the mouse is clicked """
+
+        if self.ammo < 0:
+            # If player has no more ammo then the player dies
+            arcade.close_window()
+
         # Gunshot sound
         arcade.play_sound(self.gun_sound)
+
         # Create a bullet
         bullet = arcade.Sprite("images/player_1/laserBlue01.png", SPRITE_SCALING_LASER)
+
+        # Lose 1 ammo
+        self.ammo -= 1
 
         # Position the bullet
         start_x = self.player_sprite.center_x
@@ -748,7 +759,7 @@ class GameView(arcade.View):
         if self.player_sprite.center_y < -100:
             self.player_sprite.center_x = self.PLAYER_START_X
             self.player_sprite.center_y = self.PLAYER_START_Y
-            self.lives -= 1
+            self.ammo -= 1
 
             # Set the camera to the start
             self.view_left = 0
@@ -763,7 +774,7 @@ class GameView(arcade.View):
             self.player_sprite.change_y = 0
             self.player_sprite.center_x = self.PLAYER_START_X
             self.player_sprite.center_y = self.PLAYER_START_Y
-            self.lives -= 1
+            self.ammo -= 1
 
             # Set the camera to the start
             self.view_left = 0
@@ -773,7 +784,7 @@ class GameView(arcade.View):
 
         if arcade.check_for_collision_with_list(self.player_sprite,
                                                 self.dont_touch_list):
-            self.lives -= 1
+            self.ammo -= 1
 
         # See if the user got to the end of the level
         if arcade.check_for_collision_with_list(self.player_sprite,
@@ -789,7 +800,7 @@ class GameView(arcade.View):
             self.view_bottom = 0
             changed_viewport = True
 
-        if self.lives <= self.death:
+        if self.ammo <= self.death:
             view = GameOverView()
             self.window.show_view(view)
 
