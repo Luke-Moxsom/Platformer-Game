@@ -17,6 +17,7 @@ TILE_SCALING = (SPRITE_SCALING / 1.6)
 
 # Player movement speed (pixels per frame)
 PLAYER_MOVEMENT_SPEED = 5
+UPDATES_PER_FRAME = 5
 GRAVITY = 1.5
 PLAYER_JUMP_SPEED = 20
 BULLET_SPEED = 10
@@ -46,25 +47,29 @@ class PlayerCharacter(arcade.Sprite):
         # Set up parent class
         super().__init__()
 
-        # Default to face-right
-        self.character_face_direction = RIGHT_FACING
-
-        # Used for flipping between image sequences
-        self.cur_texture = 10
-
-        # Track our state
         self.jumping = False
         self.climbing = False
         self.is_on_ladder = False
 
-        # Player sprite main path
-        main_path = "images/player_1/zombie"
+        # Set the players ammo
+        self.player_ammo = 3
 
-        # Load textures for idle standing
-        self.idle_texture_pair = load_texture_pair(f"{main_path}_idle.png")
+        # Default to face-right
+        self.character_face_direction = RIGHT_FACING
+        # Used for flipping between image sequences
+        self.cur_texture = 0
+        self.scale = SPRITE_SCALING
+        # Adjust the collision box. Default includes too much empty space
+        # side-to-side. Box is centered at sprite center, (0, 0)
+        self.points = [[-22, -64], [22, -64], [22, 28], [-22, 28]]
+
+        # --- Load Textures ---
+        main_path = "images/player_1/water_player"
+
         self.jump_texture_pair = load_texture_pair(f"{main_path}_jump.png")
         self.fall_texture_pair = load_texture_pair(f"{main_path}_fall.png")
 
+        self.idle_texture_pair = load_texture_pair(f"{main_path}_idle.png")
         # Load textures for walking
         self.walk_textures = []
         for i in range(8):
@@ -78,15 +83,36 @@ class PlayerCharacter(arcade.Sprite):
         texture = arcade.load_texture(f"{main_path}_climb1.png")
         self.climbing_textures.append(texture)
 
-        # Set the initial texture
-        self.texture = self.idle_texture_pair[0]
+    def update_animation(self, delta_time: float = 1 / 60):
 
-    def update_animation(self, delta_time: float = 1/60):
+        self.scale = SPRITE_SCALING + self.player_ammo / 18
+
         # Figure out if we need to flip face left or right
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
             self.character_face_direction = LEFT_FACING
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
+
+        # Idle animation
+        if self.change_x == 0 and self.change_y == 0:
+            self.texture = self.idle_texture_pair[self.character_face_direction]
+            return
+
+        # Walking animation
+        self.cur_texture += 1
+        if self.cur_texture > 7 * UPDATES_PER_FRAME:
+            self.cur_texture = 0
+        frame = self.cur_texture // UPDATES_PER_FRAME
+        direction = self.character_face_direction
+        self.texture = self.walk_textures[frame][direction]
+
+        # Jumping animation
+        if self.change_y > 0 and not self.is_on_ladder:
+            self.texture = self.jump_texture_pair[self.character_face_direction]
+            return
+        elif self.change_y < 0 and not self.is_on_ladder:
+            self.texture = self.fall_texture_pair[self.character_face_direction]
+            return
 
         # Climbing animation
         if self.is_on_ladder:
@@ -101,28 +127,10 @@ class PlayerCharacter(arcade.Sprite):
             self.texture = self.climbing_textures[self.cur_texture // 4]
             return
 
-        # Jumping animation
-        if self.change_y > 0 and not self.is_on_ladder:
-            self.texture = self.jump_texture_pair[self.character_face_direction]
-            return
-        elif self.change_y < 0 and not self.is_on_ladder:
-            self.texture = self.fall_texture_pair[self.character_face_direction]
-            return
-
-        # Idle animation
-        if self.change_x == 0:
-            self.texture = self.idle_texture_pair[self.character_face_direction]
-            return
-
-        # Walking animation
-        self.cur_texture += 1
-        if self.cur_texture > 7:
-            self.cur_texture = 0
-        self.texture = self.walk_textures[self.cur_texture][self.character_face_direction]
-
 
 class SettingsView(arcade.View):
     """ View that shows the settings view """
+
     def __init__(self):
         # Set up parent class
         super().__init__()
@@ -179,6 +187,7 @@ class SettingsView(arcade.View):
 
 class GameOverView(arcade.View):
     """ View to show instructions """
+
     def __init__(self):
         # Set up parent class
         super().__init__()
@@ -265,6 +274,7 @@ class GameOverView(arcade.View):
 
 class InstructionView(arcade.View):
     """ View to show instructions """
+
     def __init__(self):
         # Set up parent class
         super().__init__()
@@ -411,11 +421,6 @@ class GameView(arcade.View):
         # Level
         self.level = 1
 
-        # This keeps track of how many live the player has/how they have to have to die
-        # How many lives the player has
-        self.ammo = 3
-        self.death = -1
-
         # Load sounds
         # Jump sound
         self.jump_sound = arcade.load_sound(":resources:sounds/jump1.wav")
@@ -446,6 +451,7 @@ class GameView(arcade.View):
         # -- Draw an enemy on the ground
         enemy = arcade.Sprite(":resources:images/enemies/ladybug.png", SPRITE_SCALING)
 
+        # Where the enemy starts
         enemy.bottom = 300
         enemy.left = 288
 
@@ -467,7 +473,7 @@ class GameView(arcade.View):
         # Name of the layer in the file that has our platforms/walls
         platforms_layer_name = 'Platforms'
         # Name of the moving platforms layer
-        moving_platforms_layer_name = 'Moving Platforms'
+        # moving_platforms_layer_name = 'Moving Platforms'
         # Name of the layer with the items in the foreground
         foreground_layer_name = "Foreground"
         # Name of the layer that has items we shouldn't touch
@@ -502,7 +508,7 @@ class GameView(arcade.View):
         self.ladder_list = arcade.tilemap.process_layer(my_map, "Ladders",
                                                         TILE_SCALING,
                                                         use_spatial_hash=True)
-        
+
         # -- Platforms
         self.wall_list = arcade.tilemap.process_layer(my_map,
                                                       platforms_layer_name,
@@ -569,7 +575,7 @@ class GameView(arcade.View):
         self.enemy_list.draw()
 
         # Draw the players ammo/lives on the screen, scrolling it with the viewport
-        ammo_text = f"ammo : {self.ammo}"
+        ammo_text = f"ammo : {self.player_sprite.player_ammo}"
         arcade.draw_text(ammo_text, 10 + self.view_left, 10 + self.view_bottom,
                          arcade.csscolor.WHITE, 18)
 
@@ -605,15 +611,15 @@ class GameView(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
         """ Called when the mouse is clicked """
 
-        if self.ammo > 0:
+        if self.player_sprite.player_ammo > 0:
             # Gunshot sound
             arcade.play_sound(self.gun_sound)
 
             # Create a bullet
-            bullet = arcade.Sprite("images/player_1/laserBlue01.png", SPRITE_SCALING_LASER)
+            bullet = arcade.Sprite("images/player_1/water_bullet.png", SPRITE_SCALING_LASER)
 
             # Lose 1 ammo
-            self.ammo -= 1
+            self.player_sprite.player_ammo -= 1
 
             # Position the bullet
             start_x = self.player_sprite.center_x
@@ -641,7 +647,7 @@ class GameView(arcade.View):
             # Add the bullet to appropriate lists
             self.bullet_list.append(bullet)
 
-        elif self.ammo < 0:
+        elif self.player_sprite.player_ammo < 0:
             # If the player has no ammo then they cant shoot
             print("No ammo")
 
@@ -692,11 +698,10 @@ class GameView(arcade.View):
             # If the enemy hit the right boundary, reverse
             elif enemy.boundary_right is not None and enemy.right > enemy.boundary_right:
                 enemy.change_x *= -1
-
             # Checks if enemy is hit by bullet
             hit_list = arcade.check_for_collision_with_list(enemy, self.bullet_list)
 
-            # If enemy is hit by bullet, delete the enemy
+            # If enemy is hit by a bullet, delete the enemy
             if len(hit_list) > 0:
                 enemy.remove_from_sprite_lists()
 
@@ -704,10 +709,14 @@ class GameView(arcade.View):
         for bullet in self.bullet_list:
 
             # Check if bullet hit a wall
-            hit_list = arcade.check_for_collision_with_list(bullet, self.wall_list and self.enemy_list)
+            enemy_hit_list = arcade.check_for_collision_with_list(bullet, self.enemy_list)
+            wall_hit_list = arcade.check_for_collision_with_list(bullet, self.wall_list)
 
             # If bullet did hit then remove from list
-            if len(hit_list) > 0:
+            if len(enemy_hit_list) > 0:
+                bullet.remove_from_sprite_lists()
+
+            if len(wall_hit_list) > 0:
                 bullet.remove_from_sprite_lists()
 
             # If bullet flies off screen remove it
@@ -756,7 +765,7 @@ class GameView(arcade.View):
         if self.player_sprite.center_y < -100:
             self.player_sprite.center_x = self.PLAYER_START_X
             self.player_sprite.center_y = self.PLAYER_START_Y
-            self.ammo -= 1
+            self.player_sprite.player_ammo -= 1
 
             # Set the camera to the start
             self.view_left = 0
@@ -771,7 +780,7 @@ class GameView(arcade.View):
             self.player_sprite.change_y = 0
             self.player_sprite.center_x = self.PLAYER_START_X
             self.player_sprite.center_y = self.PLAYER_START_Y
-            self.ammo -= 1
+            self.player_sprite.player_ammo -= 1
 
             # Set the camera to the start
             self.view_left = 0
@@ -779,9 +788,11 @@ class GameView(arcade.View):
             changed_viewport = True
             arcade.play_sound(self.game_over)
 
+        # Did the player touch a enemy?
         if arcade.check_for_collision_with_list(self.player_sprite,
-                                                self.dont_touch_list):
-            self.ammo -= 1
+                                                self.enemy_list):
+            enemy.remove_from_sprite_lists()
+            self.player_sprite.player_ammo -= 1
 
         # See if the user got to the end of the level
         if arcade.check_for_collision_with_list(self.player_sprite,
@@ -797,7 +808,7 @@ class GameView(arcade.View):
             self.view_bottom = 0
             changed_viewport = True
 
-        if self.ammo <= self.death:
+        if self.player_sprite.player_ammo == 0:
             view = GameOverView()
             self.window.show_view(view)
 
