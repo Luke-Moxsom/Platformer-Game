@@ -10,6 +10,7 @@ SCREEN_TITLE = "Game Assessment"
 
 # Sprite scaling constants
 SPRITE_SCALING = 0.3
+PLAYER_SCALING = 0.25
 SPRITE_NATIVE_SIZE = 128
 SPRITE_SIZE = int(SPRITE_NATIVE_SIZE * SPRITE_SCALING / 100)
 SPRITE_SCALING_LASER = 0.5
@@ -19,7 +20,6 @@ TILE_SCALING = (SPRITE_SCALING / 1.6)
 PLAYER_MOVEMENT_SPEED = 5
 UPDATES_PER_FRAME = 5
 GRAVITY = 1.5
-PLAYER_JUMP_SPEED = 20
 BULLET_SPEED = 10
 
 # Boundaries of the scrolling screen
@@ -47,18 +47,21 @@ class PlayerCharacter(arcade.Sprite):
         # Set up parent class
         super().__init__()
 
+        # Sets variables
         self.jumping = False
         self.climbing = False
         self.is_on_ladder = False
+        self.player_damage = False
 
         # Set the players ammo
         self.player_ammo = 3
+        self.player_jump = 20
 
         # Default to face-right
         self.character_face_direction = RIGHT_FACING
         # Used for flipping between image sequences
         self.cur_texture = 0
-        self.scale = SPRITE_SCALING
+        self.scale = PLAYER_SCALING
         # Adjust the collision box. Default includes too much empty space
         # side-to-side. Box is centered at sprite center, (0, 0)
         self.points = [[-22, -64], [22, -64], [22, 28], [-22, 28]]
@@ -85,7 +88,8 @@ class PlayerCharacter(arcade.Sprite):
 
     def update_animation(self, delta_time: float = 1 / 60):
 
-        self.scale = SPRITE_SCALING + self.player_ammo / 18
+        # Scale the players size by amount of ammo
+        self.scale = PLAYER_SCALING + self.player_ammo / 18
 
         # Figure out if we need to flip face left or right
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
@@ -128,63 +132,6 @@ class PlayerCharacter(arcade.Sprite):
             return
 
 
-class SettingsView(arcade.View):
-    """ View that shows the settings view """
-
-    def __init__(self):
-        # Set up parent class
-        super().__init__()
-
-        # Variables
-        self.selected = 0
-
-        # Draw picture for background of the view
-        arcade.set_background_color(arcade.csscolor.BLACK)
-
-        # Reset the viewport, necessary if we have a scrolling game and we need
-        # to reset the viewport back to the start so we can see what we draw.
-        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
-
-    def on_draw(self):
-        """ Draw this view """
-        arcade.start_render()
-
-        # Reset viewport
-        arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
-
-        # Draw text on the screen
-        # Draw the title
-        arcade.draw_text("You thought I was good\nenough to make settings", SCREEN_WIDTH / 2, 500,
-                         arcade.color.WHITE, font_size=50, anchor_x="center")
-
-        # Draw buttons
-        if self.selected == 1:
-            arcade.draw_text("Back", SCREEN_WIDTH / 2, 100,
-                             arcade.color.WHITE, font_size=60, anchor_x="center")
-        else:
-            arcade.draw_text("Back", SCREEN_WIDTH / 2, 100,
-                             arcade.color.WHITE, font_size=50, anchor_x="center")
-
-    def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
-        """ Contains where the mouse is """
-        if not 500 < x < 700 and not 80 < y < 180:
-            # Select nothing
-            self.selected = 0
-
-        elif 550 < x < 650 and 80 < y < 180:
-            # Play
-            self.selected = 1
-
-    def on_mouse_press(self, _x, _y, _button, _modifiers):
-        """ If the user clicks on a button, this is called """
-        if 500 < _x < 700 and 80 < _y < 180:
-            # Back
-            print("Back")
-            game_view = InstructionView()
-            self.window.show_view(game_view)
-            self.selected = 1
-
-
 class GameOverView(arcade.View):
     """ View to show instructions """
 
@@ -220,10 +167,10 @@ class GameOverView(arcade.View):
                              arcade.color.WHITE, font_size=50, anchor_x="center")
 
         if self.selected == 2:
-            arcade.draw_text("Settings", 225, 180,
+            arcade.draw_text("Menu", 225, 180,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
         else:
-            arcade.draw_text("Settings", 225, 180,
+            arcade.draw_text("Menu", 225, 180,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
 
         if self.selected == 3:
@@ -242,8 +189,8 @@ class GameOverView(arcade.View):
             # Continue
             self.selected = 1
 
-        if 100 < x < 350 and 170 < y < 270:
-            # Settings
+        if 100 < x < 320 and 170 < y < 270:
+            # Menu
             self.selected = 2
 
         if 150 < x < 300 and 75 < y < 180:
@@ -260,9 +207,11 @@ class GameOverView(arcade.View):
             self.window.show_view(game_view)
             self.selected = 1
 
-        if 100 < _x < 350 and 170 < _y < 270:
-            # Settings
-            print("Settings")
+        if 100 < _x < 320 and 170 < _y < 270:
+            # Menu
+            print("Menu")
+            game_view = InstructionView()
+            self.window.show_view(game_view)
             self.selected = 2
 
         if 150 < _x < 300 and 75 < _y < 180:
@@ -309,13 +258,6 @@ class InstructionView(arcade.View):
             arcade.draw_text("Play", 225, 285,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
 
-        if self.selected == 2:
-            arcade.draw_text("Settings", 225, 180,
-                             arcade.color.WHITE, font_size=60, anchor_x="center")
-        else:
-            arcade.draw_text("Settings", 225, 180,
-                             arcade.color.WHITE, font_size=50, anchor_x="center")
-
         if self.selected == 3:
             arcade.draw_text("Quit", 225, 75,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
@@ -332,10 +274,6 @@ class InstructionView(arcade.View):
             # Play
             self.selected = 1
 
-        if 100 < x < 350 and 170 < y < 270:
-            # Settings
-            self.selected = 2
-
         if 150 < x < 300 and 75 < y < 180:
             # Quit
             self.selected = 3
@@ -348,13 +286,6 @@ class InstructionView(arcade.View):
             game_view = GameView()
             game_view.setup(1)
             self.window.show_view(game_view)
-
-        if 100 < _x < 350 and 170 < _y < 270:
-            # Setting
-            print("Settings")
-            game_view = SettingsView()
-            self.window.show_view(game_view)
-            self.selected = 2
 
         if 150 < _x < 300 and 75 < _y < 180:
             # Quit
@@ -400,10 +331,11 @@ class GameView(arcade.View):
         self.text_list = None
         self.bullet_list = None
         self.enemy_turn_list = None
+        self.water_list = None
 
         # Where the player starts
-        self.PLAYER_START_X = 100
-        self.PLAYER_START_Y = 500
+        self.PLAYER_START_X = 500
+        self.PLAYER_START_Y = 700
 
         # Separate variable that holds the player sprite
         self.player_sprite = None
@@ -447,17 +379,17 @@ class GameView(arcade.View):
         self.bullet_list = arcade.SpriteList()
         self.enemy_list = arcade.SpriteList()
         self.enemy_turn_list = arcade.SpriteList()
+        self.water_list = arcade.SpriteList()
 
         # -- Draw an enemy on the ground
         enemy = arcade.Sprite(":resources:images/enemies/ladybug.png", SPRITE_SCALING)
 
-        # Where the enemy starts
-        enemy.bottom = 300
-        enemy.left = 288
+        if self.level == 1:
+            # Where the enemy starts
+            enemy.bottom = 505
+            enemy.left = 1400
 
         # Set boundaries on the left/right the enemy can't cross
-        enemy.boundary_right = 1000
-        enemy.boundary_left = 0
         enemy.change_x = 2
         self.enemy_list.append(enemy)
 
@@ -486,6 +418,8 @@ class GameView(arcade.View):
         text_layer_name = "Text"
         # Name of the layer that turns a enemy when it hits it.
         enemy_turn_name = "Enemy Turn"
+        # Name of the layer that has water in it.
+        water_name = "Water"
 
         # Map name
         map_name = f"maps/level{level}.tmx"
@@ -533,6 +467,9 @@ class GameView(arcade.View):
                                                           TILE_SCALING,
                                                           use_spatial_hash=True)
 
+        # -- Water
+        self.water_list = arcade.tilemap.process_layer(my_map, water_name, TILE_SCALING)
+
         # -- Start Layer
         self.start_list = arcade.tilemap.process_layer(my_map,
                                                        start_layer_name,
@@ -564,12 +501,32 @@ class GameView(arcade.View):
         # Draw our sprites
         self.background_list.draw()
         self.text_list.draw()
+        self.water_list.draw()
         self.dont_touch_list.draw()
         self.do_touch_list.draw()
         self.start_list.draw()
         self.bullet_list.draw()
         self.wall_list.draw()
         self.ladder_list.draw()
+
+        # Draw tutorials
+        if self.level == 1:
+            # Draw text for the movement tutorial
+            arcade.draw_text("Use A and D to move", 600, 650,
+                             arcade.csscolor.WHITE, 20)
+            # Draw text for the jump tutorial
+            arcade.draw_text("Use A to jump", 975, 550,
+                             arcade.csscolor.WHITE, 20)
+            # Draw text for the shooting tutorial
+            arcade.draw_text("Click to shoot a bullet to kill an enemy\n     but be careful shooting uses lives",
+                             1220, 580, arcade.csscolor.WHITE, 20)
+            # Draw text for the water tutorial
+            arcade.draw_text("Suck up water to gain lives\n     back and grow bigger", 1460, 950,
+                             arcade.csscolor.WHITE, 20)
+            # Draw text for shrinking tutorial
+            arcade.draw_text("Maybe if you were a little smaller?", 725, 1032,
+                             arcade.csscolor.WHITE, 20)
+
         self.player_list.draw()
         self.foreground_list.draw()
         self.enemy_list.draw()
@@ -586,7 +543,7 @@ class GameView(arcade.View):
             if self.physics_engine.is_on_ladder():
                 self.player_sprite.change_y = PLAYER_MOVEMENT_SPEED
             elif self.physics_engine.can_jump(y_distance=10) and not self.jump_needs_reset:
-                self.player_sprite.change_y = PLAYER_JUMP_SPEED
+                self.player_sprite.change_y = self.player_sprite.player_jump
                 self.jump_needs_reset = True
                 arcade.play_sound(self.jump_sound)
         elif self.down_pressed and not self.up_pressed:
@@ -611,7 +568,7 @@ class GameView(arcade.View):
     def on_mouse_press(self, x, y, button, modifiers):
         """ Called when the mouse is clicked """
 
-        if self.player_sprite.player_ammo > 0:
+        if self.player_sprite.player_ammo > -2:
             # Gunshot sound
             arcade.play_sound(self.gun_sound)
 
@@ -808,7 +765,18 @@ class GameView(arcade.View):
             self.view_bottom = 0
             changed_viewport = True
 
-        if self.player_sprite.player_ammo == 0:
+        # Check if the player touches water
+        water_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
+                                                              self.water_list)
+
+        for water in water_hit_list:
+            # Remove the water block from list
+            water.remove_from_sprite_lists()
+
+            # Add more ammo
+            self.player_sprite.player_ammo += 1
+
+        if self.player_sprite.player_ammo == -1:
             view = GameOverView()
             self.window.show_view(view)
 
