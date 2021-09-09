@@ -135,9 +135,11 @@ class PlayerCharacter(arcade.Sprite):
 class GameOverView(arcade.View):
     """ View to show instructions """
 
-    def __init__(self):
+    def __init__(self, game_view):
         # Set up parent class
         super().__init__()
+
+        self.game_view = game_view
 
         # Variables
         self.selected = 0
@@ -156,30 +158,38 @@ class GameOverView(arcade.View):
         # Reset viewport
         arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
 
-        # Draw text on title screen
+        # Draw text/buttons on title screen
         self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
+
+        # if variables is == 1 then the continue button will be bigger to show the player is hovering over the button
         if self.selected == 1:
             arcade.draw_text("Continue", 225, 285,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
+        # If selected is not == 1 then the normal version of the button will be shown
         else:
             arcade.draw_text("Continue", 225, 285,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
 
+        # if variables is == 2 then the menu button will be bigger to show the player is hovering over the button
         if self.selected == 2:
             arcade.draw_text("Menu", 225, 180,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
+        # If selected is not == 1 then the normal version of the button will be shown
         else:
             arcade.draw_text("Menu", 225, 180,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
 
+        # if variables is == 3 then the quit button will be bigger to show the player is hovering over the button
         if self.selected == 3:
             arcade.draw_text("Quit", 225, 75,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
+        # If selected is not == 1 then the normal version of the button will be shown
         else:
             arcade.draw_text("Quit", 225, 75,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
 
+        # Draw the title of the game over screen
         arcade.draw_text("Lol you died", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
                          arcade.color.WHITE, font_size=70, anchor_x="center")
 
@@ -201,22 +211,16 @@ class GameOverView(arcade.View):
         """ If the user clicks on a button, this is called """
         if 150 < _x < 300 and 275 < _y < 365:
             # Continue
-            print("Continue")
-            game_view = GameView()
-            game_view.setup(1)
-            self.window.show_view(game_view)
-            self.selected = 1
+            self.window.show_view(self.game_view)
 
         if 100 < _x < 320 and 170 < _y < 270:
             # Menu
-            print("Menu")
             game_view = InstructionView()
             self.window.show_view(game_view)
             self.selected = 2
 
         if 150 < _x < 300 and 75 < _y < 180:
             # Quit
-            print("Quit")
             arcade.close_window()
             self.selected = 3
 
@@ -515,7 +519,7 @@ class GameView(arcade.View):
             arcade.draw_text("Use A and D to move", 600, 650,
                              arcade.csscolor.WHITE, 20)
             # Draw text for the jump tutorial
-            arcade.draw_text("Use A to jump", 975, 550,
+            arcade.draw_text("Use W to jump", 975, 550,
                              arcade.csscolor.WHITE, 20)
             # Draw text for the shooting tutorial
             arcade.draw_text("Click to shoot a bullet to kill an enemy\n     but be careful shooting uses lives",
@@ -524,7 +528,8 @@ class GameView(arcade.View):
             arcade.draw_text("Suck up water to gain lives\n     back and grow bigger", 1460, 950,
                              arcade.csscolor.WHITE, 20)
             # Draw text for shrinking tutorial
-            arcade.draw_text("Maybe if you were a little smaller?", 725, 1032,
+            arcade.draw_text("                   Maybe if you were a little smaller?\n "
+                             "(shoot to shrink but watch your lives in the bottom left)", 625, 1010,
                              arcade.csscolor.WHITE, 20)
 
         self.player_list.draw()
@@ -532,7 +537,7 @@ class GameView(arcade.View):
         self.enemy_list.draw()
 
         # Draw the players ammo/lives on the screen, scrolling it with the viewport
-        ammo_text = f"ammo : {self.player_sprite.player_ammo}"
+        ammo_text = f"Lives : {self.player_sprite.player_ammo}"
         arcade.draw_text(ammo_text, 10 + self.view_left, 10 + self.view_bottom,
                          arcade.csscolor.WHITE, 18)
 
@@ -770,14 +775,15 @@ class GameView(arcade.View):
                                                               self.water_list)
 
         for water in water_hit_list:
-            # Remove the water block from list
+            # Remove the water block from list. We touched the water so the water will disappear
             water.remove_from_sprite_lists()
 
-            # Add more ammo
+            # Add more ammo.
             self.player_sprite.player_ammo += 1
-
-        if self.player_sprite.player_ammo == -1:
-            view = GameOverView()
+        # If ammo drops bellow zero player dies
+        if self.player_sprite.player_ammo < 0:
+            # Switch to game over view
+            view = GameOverView(self)
             self.window.show_view(view)
 
         # --- Manage Scrolling ---
