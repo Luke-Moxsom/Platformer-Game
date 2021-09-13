@@ -145,7 +145,10 @@ class GameOverView(arcade.View):
         self.selected = 0
 
         # Draw picture for background of the view port
-        self.texture = arcade.load_texture("images/Title.png")
+        self.texture = arcade.load_texture("images/Game Over.png")
+
+        # Loads the sound for the button selection noise
+        self.button_sound = arcade.load_sound("sounds/Button select.wav")
 
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.
@@ -196,16 +199,25 @@ class GameOverView(arcade.View):
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """ Contains where the mouse is """
         if 80 < x < 370 and 275 < y < 365:
-            # Continue
-            self.selected = 1
+            if self.selected != 1:
+                # Continue
+                self.selected = 1
+                arcade.play_sound(self.button_sound)
 
-        if 100 < x < 320 and 170 < y < 270:
-            # Menu
-            self.selected = 2
+        elif 100 < x < 320 and 170 < y < 270:
+            if self.selected != 2:
+                # Menu
+                self.selected = 2
+                arcade.play_sound(self.button_sound)
 
-        if 150 < x < 300 and 75 < y < 180:
-            # Quit
-            self.selected = 3
+        elif 150 < x < 300 and 75 < y < 180:
+            if self.selected != 3:
+                # Quit
+                self.selected = 3
+                arcade.play_sound(self.button_sound)
+
+        else:
+            self.selected = 0
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """ If the user clicks on a button, this is called """
@@ -240,6 +252,9 @@ class InstructionView(arcade.View):
         # Draw picture for background of the view port
         self.texture = arcade.load_texture("images/Title.png")
 
+        # Loads the sound for the button selection noise
+        self.button_sound = arcade.load_sound("sounds/Button select.wav")
+
         # Reset the viewport, necessary if we have a scrolling game and we need
         # to reset the viewport back to the start so we can see what we draw.
         arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
@@ -255,45 +270,51 @@ class InstructionView(arcade.View):
         self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
 
-        arcade.draw_rectangle_filled(225, 320, 150, 90, (255, 255, 255, 50), 0)
-
         if self.selected == 1:
-            arcade.draw_text("Play", 225, 285,
+            arcade.draw_text("Play", 225, 235,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
         else:
-            arcade.draw_text("Play", 225, 285,
+            arcade.draw_text("Play", 225, 235,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
 
-        if self.selected == 3:
-            arcade.draw_text("Quit", 225, 75,
+        if self.selected == 2:
+            arcade.draw_text("Quit", 225, 125,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
         else:
-            arcade.draw_text("Quit", 225, 75,
+            arcade.draw_text("Quit", 225, 125,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
 
-        arcade.draw_text("Yep This is a Game", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
+        arcade.draw_text("Water Drop", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
                          arcade.color.WHITE, font_size=70, anchor_x="center")
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """ Contains where the mouse is """
-        if 150 < x < 300 and 275 < y < 365:
-            # Play
-            self.selected = 1
+        if 150 < x < 300 and 225 < y < 315:
+            if self.selected != 1:
+                # Play
+                self.selected = 1
+                arcade.play_sound(self.button_sound)
 
-        if 150 < x < 300 and 75 < y < 180:
-            # Quit
-            self.selected = 3
+        elif 150 < x < 300 and 125 < y < 230:
+            if self.selected != 2:
+                # Quit
+                self.selected = 2
+                arcade.play_sound(self.button_sound)
+
+        else:
+            # If player is not hovering any button it will make all of them small
+            self.selected = 0
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """ If the user clicks on a button, this is called """
-        if 150 < _x < 300 and 275 < _y < 365:
+        if 150 < _x < 300 and 225 < _y < 315:
             # Play
             print("Play")
             game_view = GameView()
             game_view.setup(1)
             self.window.show_view(game_view)
 
-        if 150 < _x < 300 and 75 < _y < 180:
+        if 150 < _x < 300 and 125 < _y < 230:
             # Quit
             print("Quit")
             arcade.close_window()
