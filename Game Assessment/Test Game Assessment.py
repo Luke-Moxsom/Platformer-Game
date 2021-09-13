@@ -211,7 +211,9 @@ class GameOverView(arcade.View):
         """ If the user clicks on a button, this is called """
         if 150 < _x < 300 and 275 < _y < 365:
             # Continue
-            self.window.show_view(self.game_view)
+            game_view = GameView()
+            game_view.setup(1)
+            self.window.show_view(game_view)
 
         if 100 < _x < 320 and 170 < _y < 270:
             # Menu
@@ -347,6 +349,9 @@ class GameView(arcade.View):
         # Our 'physics' engine
         self.physics_engine = None
 
+        # Set the reset variable to False
+        self.reset = False
+
         # Used to keep track of our scrolling
         self.view_bottom = 0
         self.view_left = 0
@@ -400,11 +405,6 @@ class GameView(arcade.View):
         # Set up the player, specifically placing it at these coordinates.
         self.player_sprite = PlayerCharacter()
 
-        # Set up the sprite center
-        self.player_sprite.center_x = self.PLAYER_START_X
-        self.player_sprite.center_y = self.PLAYER_START_Y
-        self.player_list.append(self.player_sprite)
-
         # --- Load in a map from the tiled editor ---
         # Name of the layer in the file that has our platforms/walls
         platforms_layer_name = 'Platforms'
@@ -424,6 +424,11 @@ class GameView(arcade.View):
         enemy_turn_name = "Enemy Turn"
         # Name of the layer that has water in it.
         water_name = "Water"
+
+        # Put the player back at the starting position of the level
+        self.player_sprite.center_x = self.PLAYER_START_X
+        self.player_sprite.center_y = self.PLAYER_START_Y
+        self.player_list.append(self.player_sprite)
 
         # Map name
         map_name = f"maps/level{level}.tmx"
@@ -783,6 +788,7 @@ class GameView(arcade.View):
         # If ammo drops bellow zero player dies
         if self.player_sprite.player_ammo < 0:
             # Switch to game over view
+            self.reset = True
             view = GameOverView(self)
             self.window.show_view(view)
 
