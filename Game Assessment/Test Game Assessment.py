@@ -274,29 +274,32 @@ class InstructionView(arcade.View):
 
     def on_draw(self):
         """ --- EVERYTHING INSIDE THIS WILL BE DRAWN OF THE SCREEN --- """
+        # Everything between this will be drawn on the screen
         arcade.start_render()
-
-        # Reset viewport
+        # Resets the viewport again to make sure the camera is looking at the viewport
         arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
-
-        # Draw text on title screen
+        # Draws the picture in the background of the gameover screen
         self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
-
+        # --- Draws the PLay button ---
+        # If selected is == 1 then the play button will be drawn slightly larger
         if self.selected == 1:
             arcade.draw_text("Play", 225, 235,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
+        # If selected is not == 1 then the button will be drawn at its normal smaller size
         else:
             arcade.draw_text("Play", 225, 235,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
-
+        # --- Draws the QUIT button ---
+        # If selected is == 2 then the quit button will be drawn slightly larger
         if self.selected == 2:
             arcade.draw_text("Quit", 225, 125,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
+        # If selected is not == 2 then the button will be drawn at its normal smaller size
         else:
             arcade.draw_text("Quit", 225, 125,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
-
+        # Draws the title text for the title screen
         arcade.draw_text("Water Drop", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
                          arcade.color.WHITE, font_size=70, anchor_x="center")
 
