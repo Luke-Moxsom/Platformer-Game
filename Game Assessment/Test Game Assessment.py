@@ -70,10 +70,10 @@ class PlayerCharacter(arcade.Sprite):
         # side-to-side. Box is centered at sprite center, (0, 0)
         self.points = [[-22, -64], [22, -64], [22, 28], [-22, 28]]
 
-        # --- Load Textures ---
+        # --- Load Textures --- #
         # Sets the player default file path
         main_path = "images/player_1/water_player"
-        # --- Loads the player files to the right action ---
+        # --- Loads the player files to the right action --- #
         # Loads the jump textures
         self.jump_texture_pair = load_texture_pair(f"{main_path}_jump.png")
         # Loads the falling textures
@@ -104,12 +104,12 @@ class PlayerCharacter(arcade.Sprite):
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
 
-        # Idle animation
+        # --- IDLE ANIMATION --- #
         if self.change_x == 0 and self.change_y == 0:
             self.texture = self.idle_texture_pair[self.character_face_direction]
             return
 
-        # Walking animation
+        # --- WALKING ANIMATION --- #
         self.cur_texture += 1
         if self.cur_texture > 7 * UPDATES_PER_FRAME:
             self.cur_texture = 0
@@ -117,7 +117,7 @@ class PlayerCharacter(arcade.Sprite):
         direction = self.character_face_direction
         self.texture = self.walk_textures[frame][direction]
 
-        # Jumping animation
+        # --- JUMPING ANIMATION --- #
         if self.change_y > 0 and not self.is_on_ladder:
             self.texture = self.jump_texture_pair[self.character_face_direction]
             return
@@ -166,7 +166,7 @@ class GameOverView(arcade.View):
         # Draws the picture in the background of the gameover screen
         self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
-        # --- Draws the CONTINUE button ---
+        # --- Draws the CONTINUE button --- #
         # If selected is == 1 then the continue button will be drawn slightly larger
         if self.selected == 1:
             arcade.draw_text("Continue", 225, 285,
@@ -175,7 +175,7 @@ class GameOverView(arcade.View):
         else:
             arcade.draw_text("Continue", 225, 285,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
-        # --- Draws the MENU button ---
+        # --- Draws the MENU button --- #
         # If selected is == 2 then the menu button will be drawn slightly larger
         if self.selected == 2:
             arcade.draw_text("Menu", 225, 180,
@@ -184,7 +184,7 @@ class GameOverView(arcade.View):
         else:
             arcade.draw_text("Menu", 225, 180,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
-        # --- Draws the QUIT button ---
+        # --- Draws the QUIT button --- #
         # If selected is == 3 then the QUIT button will be drawn slightly larger
         if self.selected == 3:
             arcade.draw_text("Quit", 225, 75,
@@ -199,30 +199,30 @@ class GameOverView(arcade.View):
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """ --- TRACKS WHERE THE MOUSE IS ON SCREEN --- """
-        # --- Tracking for CONTINUE ---
+        # --- Tracking for CONTINUE --- #
         # If the mouse is inside these points then then selected will be set to 1
         if 80 < x < 370 and 275 < y < 365:
             # If selected is not already set to 1 then selected will be set to 1
             if self.selected != 1:
-                # --- Continue ---
+                # --- Continue --- #
                 # Sets selected to 1
                 self.selected = 1
                 # Plays the player feedback sound when the player hovers over the CONTINUE button
                 arcade.play_sound(self.button_sound)
-        # --- Tracking for SELECTED ---
+        # --- Tracking for SELECTED --- #
         # If the mouse is inside these points then then selected will be set to 2
         elif 100 < x < 320 and 170 < y < 270:
             if self.selected != 2:
-                # --- MENU ---
+                # --- MENU --- #
                 # Sets selected to 2
                 self.selected = 2
                 # Plays the player feedback sound when the player hovers over the MENU button
                 arcade.play_sound(self.button_sound)
-        # --- Tracking for QUIT ---
+        # --- Tracking for QUIT --- #
         # If the mouse is inside these points then then selected will be set to 3
         elif 150 < x < 300 and 75 < y < 180:
             if self.selected != 3:
-                # --- CONTINUE ---
+                # --- CONTINUE --- #
                 # Sets selected to 3
                 self.selected = 3
                 # Plays the player feedback sound when the player hovers over the MENU button
@@ -233,25 +233,25 @@ class GameOverView(arcade.View):
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """ --- TRACKS IF THE PLAYER CLICKS SOMEWHERE ON SCREEN --- """
-        # --- Tracking for CONTINUE ---
+        # --- Tracking for CONTINUE --- #
         # If the mouse is clicked inside these points then these action will happen
         if 150 < _x < 300 and 275 < _y < 365:
-            # --- CONTINUE ---
+            # --- CONTINUE --- #
             # Sets the view back to the game view
             game_view = GameView()
             game_view.setup(1)
             self.window.show_view(game_view)
-        # --- Tracking for MENU ---
+        # --- Tracking for MENU --- #
         # If the mouse is clicked inside these points then these action will happen
         if 100 < _x < 320 and 170 < _y < 270:
-            # --- MENU ---
+            # --- MENU --- #
             # Sets the view back to the instruction view
             game_view = InstructionView()
             self.window.show_view(game_view)
-        # --- Tracking for QUIT ---
+        # --- Tracking for QUIT --- #
         # If the mouse is clicked inside these points then these action will happen
         if 150 < _x < 300 and 75 < _y < 180:
-            # --- QUIT ---
+            # --- QUIT --- #
             # Quits out of the window
             arcade.close_window()
 
@@ -281,7 +281,7 @@ class InstructionView(arcade.View):
         # Draws the picture in the background of the gameover screen
         self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
-        # --- Draws the PLay button ---
+        # --- Draws the PLay button --- #
         # If selected is == 1 then the play button will be drawn slightly larger
         if self.selected == 1:
             arcade.draw_text("Play", 225, 235,
@@ -290,7 +290,7 @@ class InstructionView(arcade.View):
         else:
             arcade.draw_text("Play", 225, 235,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
-        # --- Draws the QUIT button ---
+        # --- Draws the QUIT button --- #
         # If selected is == 2 then the quit button will be drawn slightly larger
         if self.selected == 2:
             arcade.draw_text("Quit", 225, 125,
@@ -322,45 +322,45 @@ class InstructionView(arcade.View):
             self.selected = 0
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
-        """ If the user clicks on a button, this is called """
+        """ --- TRACKS IF THE PLAYER CLICKS SOMEWHERE ON SCREEN --- """
+        # --- Tracking for CONTINUE --- #
+        # If the mouse is clicked inside these points then these action will happen
         if 150 < _x < 300 and 225 < _y < 315:
-            # Play
+            # --- PLAY --- #
+            # Sets the view to the game view
             print("Play")
             game_view = GameView()
             game_view.setup(1)
             self.window.show_view(game_view)
-
+        # --- Tracking for QUIT --- #
+        # If the mouse is inside these points then then selected will be set to 3
         if 150 < _x < 300 and 125 < _y < 230:
-            # Quit
+            # --- Tracking for QUIT --- #
+            # If the mouse is clicked inside these points then these action will happen
             print("Quit")
             arcade.close_window()
             self.selected = 3
 
 
 class GameView(arcade.View):
-    """ Main application class """
+    """ --- MAIN VIEW FOR THE GAME VIEW --- """
     def __init__(self):
-        """ Initializer for the game """
-
+        """ --- SETS EVERYTHING UP FOR THE GAME --- """
         # Call the parent class and set up the window
         super().__init__()
-
-        # Set the mouse to visible
+        # Makes the mouse visible while hovering over the window
         self.window.set_mouse_visible(True)
-
         # Set the path to start with this program
         file_path = os.path.dirname(os.path.abspath(__file__))
         os.chdir(file_path)
-
-        # Track the current state of what key is pressed
+        # Tracks the current state of what key is pressed
         self.left_pressed = False
         self.right_pressed = False
         self.up_pressed = False
         self.down_pressed = False
         self.jump_needs_reset = False
-
-        # These are 'lists' that keep track of our sprites. Each sprite should
-        # go into a list.
+        # --- LISTS --- #
+        # Creates lists for all of our sprites
         self.wall_list = None
         self.background_list = None
         self.dont_touch_list = None
@@ -371,31 +371,24 @@ class GameView(arcade.View):
         self.text_list = None
         self.bullet_list = None
         self.water_list = None
-
-        # Where the player starts
+        # --- SETS WHERE THE PLAYER STARTS --- #
+        # Set the point where the player will start
         self.PLAYER_START_X = 500
         self.PLAYER_START_Y = 700
-
         # Separate variable that holds the player sprite
         self.player_sprite = None
-
         # Our 'physics' engine
         self.physics_engine = None
-
         # Set the reset variable to False
         self.reset = False
-
         # Used to keep track of our scrolling
         self.view_bottom = 0
         self.view_left = 0
-
-        # End of map
+        # Sets the end of the map
         self.end_of_map = 0
-
-        # Level
+        # This sets the first level that the player will start on
         self.level = 1
-
-        # Load sounds
+        # --- LOAD SOUNDS --- #
         # Hurt sound
         self.hurt = arcade.load_sound("sounds/hurt.wav")
         # Bullet wall
@@ -406,31 +399,28 @@ class GameView(arcade.View):
         # Used to keep track of our scrolling
         self.view_bottom = 0
         self.view_left = 0
-
-        # Create the Sprite lists
+        # --- CREATE SPRITE PLAYER LIST --- #
         self.player_list = arcade.SpriteList()
         self.background_list = arcade.SpriteList()
         self.wall_list = arcade.SpriteList()
         self.bullet_list = arcade.SpriteList()
         self.enemy_list = arcade.SpriteList()
         self.water_list = arcade.SpriteList()
-
-        # -- Draw an enemy on the ground
+        # -- DRAWS ENEMY ON THE GROUND --- #
+        # Sets up the enemy to be drawn in the game
         enemy = arcade.Sprite(":resources:images/enemies/ladybug.png", SPRITE_SCALING)
-
+        # --- WHERE THE ENEMY WILL BE DRAWN --- #
+        # If level == 1 then draw the enemy here
         if self.level == 1:
-            # Where the enemy starts
+            # Point where the enemy will be drawn
             enemy.bottom = 505
             enemy.left = 1400
-
-        # Set boundaries on the left/right the enemy can't cross
+        # --- SETS THE BOUNDARIES ENEMIES CANT CROSS --- #
         enemy.change_x = 2
         self.enemy_list.append(enemy)
-
-        # Set up the player, specifically placing it at these coordinates.
+        # --- Sets the player up at these points --- #
         self.player_sprite = PlayerCharacter()
-
-        # --- Load in a map from the tiled editor ---
+        # --- LOAD IN THE TILES FORM THE MAP --- #
         # Name of the layer in the file that has our platforms/walls
         platforms_layer_name = 'Platforms'
         # Name of the layer that has items we shouldn't touch
@@ -441,58 +431,49 @@ class GameView(arcade.View):
         text_layer_name = "Text"
         # Name of the layer that has water in it.
         water_name = "Water"
-
-        # Put the player back at the starting position of the level
+        # --- RESETS THE PLAYER LOCATION --- #
+        # Resets the player to the starting location to make sure the player starts at the right position
         self.player_sprite.center_x = self.PLAYER_START_X
         self.player_sprite.center_y = self.PLAYER_START_Y
         self.player_list.append(self.player_sprite)
-
-        # Map name
+        # --- LOADS THE MAP NAME --- #
+        # Loads map file
         map_name = f"maps/level{level}.tmx"
-
         # Read in the tiled map
         my_map = arcade.tilemap.read_tmx(map_name)
-
-        # Calculate the right edge of the my_map in pixels
+        # Calculates the right edge(end) of the my_map in pixels
         self.end_of_map = my_map.map_size.width * SPRITE_SCALING - 185
-
-        # -- Background objects
+        # --- DRAWS EVERYTHING ON THE MAP --- #
+        # --- Background objects --- #
         self.background_list = arcade.tilemap.process_layer(my_map, "Background", TILE_SCALING)
-
-        # -- Background objects
-        # -- Platforms
+        # --- Platforms --- #
         self.wall_list = arcade.tilemap.process_layer(my_map,
                                                       platforms_layer_name,
                                                       TILE_SCALING,
                                                       use_spatial_hash=True)
-
-        # -- Don't Touch Layer
+        # --- Don't Touch Layer --- #
         self.dont_touch_list = arcade.tilemap.process_layer(my_map,
                                                             dont_touch_layer_name,
                                                             TILE_SCALING,
                                                             use_spatial_hash=True)
-
-        # -- Do Touch Layer
+        # --- Do Touch Layer --- #
         self.do_touch_list = arcade.tilemap.process_layer(my_map,
                                                           do_touch_layer_name,
                                                           TILE_SCALING,
                                                           use_spatial_hash=True)
-
-        # -- Water
+        # --- Water --- #
         self.water_list = arcade.tilemap.process_layer(my_map, water_name, TILE_SCALING)
-
-        # -- Text
+        # --- Text --- #
         self.text_list = arcade.tilemap.process_layer(my_map,
                                                       text_layer_name,
                                                       TILE_SCALING,
                                                       use_spatial_hash=True)
-
-        # --- Other stuff
-        # Set the background color
+        # --- Other stuff --- #
+        # Set the maps background colour
         if my_map.background_color:
             arcade.set_background_color(my_map.background_color)
-
-        # Create the 'physics engine'
+        # --- Physics Engine --- #
+        # Creates the physics engine
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.player_sprite,
                                                              self.wall_list,
                                                              gravity_constant=GRAVITY)
