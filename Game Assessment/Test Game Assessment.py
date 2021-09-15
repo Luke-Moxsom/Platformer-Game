@@ -194,7 +194,7 @@ class GameOverView(arcade.View):
             arcade.draw_text("Quit", 225, 75,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
         # Draws the title text for the gameover screen
-        arcade.draw_text("Lol you died", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
+        arcade.draw_text("LOL you died", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
                          arcade.color.WHITE, font_size=70, anchor_x="center")
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
