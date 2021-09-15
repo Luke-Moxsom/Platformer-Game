@@ -385,14 +385,10 @@ class GameView(arcade.View):
         self.level = 1
 
         # Load sounds
-        # Jump sound
-        self.jump_sound = arcade.load_sound(":resources:sounds/jump1.wav")
-        # Death noise
-        self.game_over = arcade.load_sound(":resources:sounds/gameover1.wav")
-        # Gun sound
-        self.gun_sound = arcade.load_sound(":resources:sounds/hurt5.wav")
-        # Hit sound
-        self.hit_sound = arcade.load_sound(":resources:sounds/hit5.wav")
+        # Hurt sound
+        self.hurt = arcade.load_sound("sounds/hurt.wav")
+        # Bullet wall
+        self.wall_hit = arcade.load_sound("sounds/Hit Wall.wav")
 
     def setup(self, level):
         """ Set up the game here. Call this function to restart the game """
@@ -577,7 +573,7 @@ class GameView(arcade.View):
             elif self.physics_engine.can_jump(y_distance=10) and not self.jump_needs_reset:
                 self.player_sprite.change_y = self.player_sprite.player_jump
                 self.jump_needs_reset = True
-                arcade.play_sound(self.jump_sound)
+                # arcade.play_sound(self.jump_sound)
         elif self.down_pressed and not self.up_pressed:
             if self.physics_engine.is_on_ladder():
                 self.player_sprite.change_y = -PLAYER_MOVEMENT_SPEED
@@ -602,7 +598,7 @@ class GameView(arcade.View):
 
         if self.player_sprite.player_ammo > -2:
             # Gunshot sound
-            arcade.play_sound(self.gun_sound)
+            # arcade.play_sound(self.gun_sound)
 
             # Create a bullet
             bullet = arcade.Sprite("images/player_1/water_bullet.png", SPRITE_SCALING_LASER)
@@ -706,6 +702,7 @@ class GameView(arcade.View):
                 bullet.remove_from_sprite_lists()
 
             if len(wall_hit_list) > 0:
+                arcade.play_sound(self.wall_hit)
                 bullet.remove_from_sprite_lists()
 
             # If bullet flies off screen remove it
@@ -760,7 +757,7 @@ class GameView(arcade.View):
             self.view_left = 0
             self.view_bottom = 0
             changed_viewport = True
-            arcade.play_sound(self.game_over)
+            arcade.play_sound(self.hurt)
 
         # Did the player touch a spike?
         if arcade.check_for_collision_with_list(self.player_sprite,
@@ -775,13 +772,14 @@ class GameView(arcade.View):
             self.view_left = 0
             self.view_bottom = 0
             changed_viewport = True
-            arcade.play_sound(self.game_over)
+            arcade.play_sound(self.hurt)
 
         # Did the player touch a enemy?
         if arcade.check_for_collision_with_list(self.player_sprite,
                                                 self.enemy_list):
             enemy.remove_from_sprite_lists()
-            self.player_sprite.player_ammo -= 1
+            self.player_sprite.player_ammo -= 2
+            arcade.play_sound(self.hurt)
 
         # See if the user got to the end of the level
         if arcade.check_for_collision_with_list(self.player_sprite,
