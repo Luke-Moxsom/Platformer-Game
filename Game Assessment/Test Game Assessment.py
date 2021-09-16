@@ -21,8 +21,9 @@ TILE_SCALING = (SPRITE_SCALING / 1.6)
 PLAYER_MOVEMENT_SPEED = 5
 UPDATES_PER_FRAME = 5
 BULLET_SPEED = 10
-# Sets the strength of gravity
+# Sets the strength of gravity/jump speed
 GRAVITY = 1.5
+JUMP_SPEED = 20
 
 
 # Boundaries of the scrolling screen (this controls if the player reach these position on screen the camera will move)
@@ -59,6 +60,7 @@ class PlayerCharacter(arcade.Sprite):
 
         # Sets the amount of ammo the player starts with
         self.player_ammo = 3
+        self.player_jump = 20
 
         # Sets the player default facing direction (Right)
         self.character_face_direction = RIGHT_FACING
@@ -549,7 +551,6 @@ class GameView(arcade.View):
 
     def on_mouse_press(self, x, y, button, modifiers):
         """ Called when the mouse is clicked """
-
         if self.player_sprite.player_ammo > -2:
             # Gunshot sound
             # arcade.play_sound(self.gun_sound)
@@ -658,10 +659,6 @@ class GameView(arcade.View):
 
             if len(wall_hit_list) > 0:
                 arcade.play_sound(self.bullet_hit)
-                bullet.remove_from_sprite_lists()
-
-            # If bullet flies off screen remove it
-            if bullet.bottom > SCREEN_WIDTH:
                 bullet.remove_from_sprite_lists()
 
         # Move the player with the physics engine
