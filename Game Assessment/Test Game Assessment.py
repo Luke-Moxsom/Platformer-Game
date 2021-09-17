@@ -52,16 +52,13 @@ class PlayerCharacter(arcade.Sprite):
         """ --- THIS IS THE MAIN FUNCTION WHERE EVERYTHING GETS SETUP --- """
         # Set up parent class
         super().__init__()
-
         # Sets variables (to state what the player is doing)
         self.jumping = False
         self.climbing = False
         self.is_on_ladder = False
-
         # Sets the amount of ammo the player starts with
         self.player_ammo = 3
         self.player_jump = 20
-
         # Sets the player default facing direction (Right)
         self.character_face_direction = RIGHT_FACING
         # Used for flipping between image sequences
@@ -71,7 +68,6 @@ class PlayerCharacter(arcade.Sprite):
         # Adjust the collision box. Default includes too much empty space
         # side-to-side. Box is centered at sprite center, (0, 0)
         self.points = [[-22, -64], [22, -64], [22, 28], [-22, 28]]
-
         # --- Load Textures --- #
         # Sets the player default file path
         main_path = "images/player_1/water_player"
@@ -87,7 +83,6 @@ class PlayerCharacter(arcade.Sprite):
         for i in range(8):
             texture = load_texture_pair(f"{main_path}_walk{i}.png")
             self.walk_textures.append(texture)
-
         # Load the climbing textures
         self.climbing_textures = []
         texture = arcade.load_texture(f"{main_path}_climb0.png")
@@ -99,18 +94,15 @@ class PlayerCharacter(arcade.Sprite):
         """ --- UPDATES THE PLAYERS ANIMATIONS EVERY 60 SECONDS --- """
         # This resizes the players scale by how much ammo they have
         self.scale = PLAYER_SCALING + self.player_ammo / 18
-
         # Decide if the player needs to face left or right (if so the player will be flipped)
         if self.change_x < 0 and self.character_face_direction == RIGHT_FACING:
             self.character_face_direction = LEFT_FACING
         elif self.change_x > 0 and self.character_face_direction == LEFT_FACING:
             self.character_face_direction = RIGHT_FACING
-
         # --- IDLE ANIMATION --- #
         if self.change_x == 0 and self.change_y == 0:
             self.texture = self.idle_texture_pair[self.character_face_direction]
             return
-
         # --- WALKING ANIMATION --- #
         self.cur_texture += 1
         if self.cur_texture > 7 * UPDATES_PER_FRAME:
@@ -118,7 +110,6 @@ class PlayerCharacter(arcade.Sprite):
         frame = self.cur_texture // UPDATES_PER_FRAME
         direction = self.character_face_direction
         self.texture = self.walk_textures[frame][direction]
-
         # --- JUMPING ANIMATION --- #
         if self.change_y > 0 and not self.is_on_ladder:
             self.texture = self.jump_texture_pair[self.character_face_direction]
@@ -126,7 +117,6 @@ class PlayerCharacter(arcade.Sprite):
         elif self.change_y < 0 and not self.is_on_ladder:
             self.texture = self.fall_texture_pair[self.character_face_direction]
             return
-
         # Climbing animation
         if self.is_on_ladder:
             self.climbing = True
