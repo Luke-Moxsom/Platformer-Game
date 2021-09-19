@@ -365,8 +365,8 @@ class GameView(arcade.View):
         self.water_list = None
         # --- SETS WHERE THE PLAYER STARTS --- #
         # Set the point where the player will start
-        self.PLAYER_START_X = 500
-        self.PLAYER_START_Y = 700
+        self.PLAYER_START_X = 700
+        self.PLAYER_START_Y = 550
         # Separate variable that holds the player sprite
         self.player_sprite = None
         # Our 'physics' engine
