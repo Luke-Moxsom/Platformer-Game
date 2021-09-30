@@ -3,13 +3,14 @@ import math
 import arcade
 import os
 
-# Window variables (sets how big the window is)
+# Window variables how big the window is
 SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
+
 # Sets the windows name
 SCREEN_TITLE = "Game Assessment"
 
-# Sprite scaling constants (these all control how big sprite are)
+# Sprite scaling constants control how big sprite are
 SPRITE_SCALING = 0.3
 PLAYER_SCALING = 0.25
 SPRITE_NATIVE_SIZE = 128
@@ -17,16 +18,16 @@ SPRITE_SIZE = int(SPRITE_NATIVE_SIZE * SPRITE_SCALING / 100)
 SPRITE_SCALING_LASER = 0.5
 TILE_SCALING = (SPRITE_SCALING / 1.6)
 
-# Player/bullet movement speed (pixels per frame)
+# Player/bullet movement speed pixels per frame
 PLAYER_MOVEMENT_SPEED = 5
 UPDATES_PER_FRAME = 5
 BULLET_SPEED = 10
+
 # Sets the strength of gravity/jump speed
 GRAVITY = 1.5
 JUMP_SPEED = 20
 
-
-# Boundaries of the scrolling screen (this controls if the player reach these position on screen the camera will move)
+# Boundaries of the scrolling screen controls if the player reach these position on screen the camera will move
 LEFT_VIEWPORT_MARGIN = 700
 RIGHT_VIEWPORT_MARGIN = 700
 BOTTOM_VIEWPORT_MARGIN = 400
