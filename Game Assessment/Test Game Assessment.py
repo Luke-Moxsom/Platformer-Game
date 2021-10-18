@@ -174,46 +174,57 @@ class GameOverView(arcade.View):
 
     def on_draw(self):
         """ --- EVERYTHING INSIDE THIS WILL BE DRAWN OF THE SCREEN --- """
+
         # Everything between this will be drawn on the screen
         arcade.start_render()
+
         # Resets the viewport again to make sure the camera is looking at the viewport
         arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
+
         # Draws the picture in the background of the gameover screen
         self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
+
         # --- Draws the CONTINUE button --- #
         # If selected is == 1 then the continue button will be drawn slightly larger
         if self.selected == 1:
             arcade.draw_text("Continue", 225, 285,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
+
         # If selected is not == 1 then the button will be drawn at its normal smaller size
         else:
             arcade.draw_text("Continue", 225, 285,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
+
         # --- Draws the MENU button --- #
         # If selected is == 2 then the menu button will be drawn slightly larger
         if self.selected == 2:
             arcade.draw_text("Menu", 225, 180,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
+
         # If selected is not == 2 then the normal version of the button will be shown
         else:
             arcade.draw_text("Menu", 225, 180,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
+
         # --- Draws the QUIT button --- #
         # If selected is == 3 then the QUIT button will be drawn slightly larger
         if self.selected == 3:
             arcade.draw_text("Quit", 225, 75,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
+
         # If selected is not == 3 then the QUIT version of the button will be shown
         else:
             arcade.draw_text("Quit", 225, 75,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
+
         # Draws the title text for the gameover screen
         arcade.draw_text("LOL you died", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
                          arcade.color.WHITE, font_size=70, anchor_x="center")
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """ --- TRACKS WHERE THE MOUSE IS ON SCREEN --- """
+
         # --- Tracking for CONTINUE --- #
         # If the mouse is inside these points then then selected will be set to 1
         if 80 < x < 370 and 275 < y < 365:
@@ -224,6 +235,7 @@ class GameOverView(arcade.View):
                 self.selected = 1
                 # Plays the player feedback sound when the player hovers over the CONTINUE button
                 arcade.play_sound(self.button_sound)
+
         # --- Tracking for SELECTED --- #
         # If the mouse is inside these points then then selected will be set to 2
         elif 100 < x < 320 and 170 < y < 270:
@@ -233,6 +245,7 @@ class GameOverView(arcade.View):
                 self.selected = 2
                 # Plays the player feedback sound when the player hovers over the MENU button
                 arcade.play_sound(self.button_sound)
+
         # --- Tracking for QUIT --- #
         # If the mouse is inside these points then then selected will be set to 3
         elif 150 < x < 300 and 75 < y < 180:
@@ -248,14 +261,15 @@ class GameOverView(arcade.View):
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """ --- TRACKS IF THE PLAYER CLICKS SOMEWHERE ON SCREEN --- """
+
         # --- Tracking for CONTINUE --- #
         # If the mouse is clicked inside these points then these action will happen
         if 150 < _x < 300 and 275 < _y < 365:
             # --- CONTINUE --- #
             # Sets the view back to the game view
-            game_view = GameView()
-            game_view.setup(1)
+            game_view = LevelSelect()
             self.window.show_view(game_view)
+
         # --- Tracking for MENU --- #
         # If the mouse is clicked inside these points then these action will happen
         if 100 < _x < 320 and 170 < _y < 270:
@@ -263,6 +277,7 @@ class GameOverView(arcade.View):
             # Sets the view back to the instruction view
             game_view = InstructionView()
             self.window.show_view(game_view)
+
         # --- Tracking for QUIT --- #
         # If the mouse is clicked inside these points then these action will happen
         if 150 < _x < 300 and 75 < _y < 180:
@@ -1102,7 +1117,8 @@ class GameView(arcade.View):
             changed_viewport = True
 
             # Change to the next level
-            self.setup(self.level)
+            view = LevelSelect()
+            self.window.show_view(view)
 
         # Check if the player touches water
         water_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
