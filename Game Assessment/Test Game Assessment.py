@@ -412,6 +412,9 @@ class LevelSelect(arcade.View):
         # Sets what level will be shown
         self.show_level = 1
 
+        # Sets button selector to 0
+        self.button_selector = 0
+
         # Sets up the picture for the background of the instruction screen
         self.texture = arcade.load_texture("images/Title.png")
 
@@ -457,22 +460,66 @@ class LevelSelect(arcade.View):
                                  arcade.color.WHITE, font_size=50, anchor_x="center")
 
         # If the player has scrolled through to this level then it will show level 2
-        elif self.show_level == 2:
+        if self.show_level == 2:
             # If selected is == 5 then the quit button will be drawn slightly larger
             if self.selected == 5:
                 arcade.draw_text("Level 2", SCREEN_WIDTH / 2, 270,
                                  arcade.color.WHITE, font_size=60, anchor_x="center")
-            # If selected is not == 4 then the button will be drawn at its normal smaller size
+            # If selected is not == 5 then the button will be drawn at its normal smaller size
             else:
                 arcade.draw_text("Level 2", SCREEN_WIDTH / 2, 270,
+                                 arcade.color.WHITE, font_size=50, anchor_x="center")
+
+        # If the player has scrolled through to this level then it will show level 3
+        if self.show_level == 3:
+            # If selected is == 6 then the quit button will be drawn slightly larger
+            if self.selected == 6:
+                arcade.draw_text("Level 3", SCREEN_WIDTH / 2, 270,
+                                 arcade.color.WHITE, font_size=60, anchor_x="center")
+            # If selected is not == 6 then the button will be drawn at its normal smaller size
+            else:
+                arcade.draw_text("Level 3", SCREEN_WIDTH / 2, 270,
+                                 arcade.color.WHITE, font_size=50, anchor_x="center")
+
+        # If the player has scrolled through to this level then it will show level 4
+        if self.show_level == 4:
+            # If selected is == 7 then the quit button will be drawn slightly larger
+            if self.selected == 7:
+                arcade.draw_text("Level 4", SCREEN_WIDTH / 2, 270,
+                                 arcade.color.WHITE, font_size=60, anchor_x="center")
+            # If selected is not == 7 then the button will be drawn at its normal smaller size
+            else:
+                arcade.draw_text("Level 4", SCREEN_WIDTH / 2, 270,
+                                 arcade.color.WHITE, font_size=50, anchor_x="center")
+
+        # If the player has scrolled through to this level then it will show level 5
+        if self.show_level == 5:
+            # If selected is == 8 then the quit button will be drawn slightly larger
+            if self.selected == 8:
+                arcade.draw_text("Level 5", SCREEN_WIDTH / 2, 270,
+                                 arcade.color.WHITE, font_size=60, anchor_x="center")
+            # If selected is not == 8 then the button will be drawn at its normal smaller size
+            else:
+                arcade.draw_text("Level 5", SCREEN_WIDTH / 2, 270,
                                  arcade.color.WHITE, font_size=50, anchor_x="center")
 
         # Draws the title text for the title screen
         arcade.draw_text("Select Level", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
                          arcade.color.WHITE, font_size=70, anchor_x="center")
 
-        arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, 370, 25, 25, arcade.csscolor.WHITE)
-        arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, 230, 25, 25, arcade.csscolor.WHITE)
+        # Draws the arrows to change the level select
+        if self.button_selector == 1:
+            arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, 370, 25, 25, arcade.csscolor.GRAY)
+        else:
+            arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, 370, 25, 25, arcade.csscolor.WHITE)
+
+        # Draws the arrows to change the level select
+        if self.button_selector == 2:
+            arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, 230, 25, 25, arcade.csscolor.GRAY)
+        else:
+            arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, 230, 25, 25, arcade.csscolor.WHITE)
+
+        print(self.show_level)
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """ Contains where the mouse is """
@@ -482,16 +529,73 @@ class LevelSelect(arcade.View):
                 self.selected = 3
                 arcade.play_sound(self.button_sound)
 
-        elif 540 < x < 740 and 265 < y < 335:
-            if self.show_level == 1:
+        elif self.show_level == 1:
+            if 540 < x < 740 and 265 < y < 335:
                 if self.selected != 4:
                     # Level 1
                     self.selected = 4
                     arcade.play_sound(self.button_sound)
 
+            else:
+                # If player is not hovering any button it will make all of them small
+                self.selected = 0
+
+        elif self.show_level == 2:
+            if 540 < x < 740 and 265 < y < 335:
+                if self.selected != 5:
+                    # Level 1
+                    self.selected = 5
+                    arcade.play_sound(self.button_sound)
+
+            else:
+                # If player is not hovering any button it will make all of them small
+                self.selected = 0
+
+        elif self.show_level == 3:
+            if 540 < x < 740 and 265 < y < 335:
+                if self.selected != 6:
+                    # Level 1
+                    self.selected = 6
+                    arcade.play_sound(self.button_sound)
+
+            else:
+                # If player is not hovering any button it will make all of them small
+                self.selected = 0
+
+        elif self.show_level == 4:
+            if 540 < x < 740 and 265 < y < 335:
+                if self.selected != 7:
+                    # Level 1
+                    self.selected = 7
+                    arcade.play_sound(self.button_sound)
+
+            else:
+                # If player is not hovering any button it will make all of them small
+                self.selected = 0
+
+        elif self.show_level == 5:
+            if 540 < x < 740 and 265 < y < 335:
+                if self.selected != 8:
+                    # Level 1
+                    self.selected = 8
+                    arcade.play_sound(self.button_sound)
+
+            else:
+                # If player is not hovering any button it will make all of them small
+                self.selected = 0
+
         else:
             # If player is not hovering any button it will make all of them small
             self.selected = 0
+
+        if 615 < x < 665 and 345 < y < 395:
+            self.button_selector = 1
+
+        elif 615 < x < 665 and 205 < y < 255:
+            self.button_selector = 2
+
+        else:
+            self.button_selector = 0
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """ --- TRACKS IF THE PLAYER CLICKS SOMEWHERE ON SCREEN --- """
@@ -506,11 +610,52 @@ class LevelSelect(arcade.View):
             self.selected = 3
 
         # If the player clicked where the level selector is than check what level they should be taken to
-        if 540 < _x < 740 and 265 < _y < 335:
-            if self.show_level == 1:
+        if self.show_level == 1:
+            if 540 < _x < 740 and 265 < _y < 335:
                 game_view = GameView()
                 game_view.setup(1)
                 self.window.show_view(game_view)
+
+        if self.show_level == 2:
+            if 540 < _x < 740 and 265 < _y < 335:
+                game_view = GameView()
+                game_view.setup(2)
+                self.window.show_view(game_view)
+
+        if self.show_level == 3:
+            if 540 < _x < 740 and 265 < _y < 335:
+                game_view = GameView()
+                game_view.setup(3)
+                self.window.show_view(game_view)
+
+        if self.show_level == 4:
+            if 540 < _x < 740 and 265 < _y < 335:
+                game_view = GameView()
+                game_view.setup(4)
+                self.window.show_view(game_view)
+
+        if self.show_level == 5:
+            if 540 < _x < 740 and 265 < _y < 335:
+                game_view = GameView()
+                game_view.setup(5)
+                self.window.show_view(game_view)
+
+        # --- CHOOSE A LEVEL BUTTONS --- #
+        if 615 < _x < 665 and 345 < _y < 395:
+            if self.show_level == 5:
+                arcade.play_sound(self.button_sound)
+
+            elif self.show_level < 5:
+                self.show_level += 1
+                arcade.play_sound(self.button_sound)
+
+        if 615 < _x < 665 and 205 < _y < 255:
+            if self.show_level == 1:
+                arcade.play_sound(self.button_sound)
+
+            elif self.show_level > 1:
+                self.show_level -= 1
+                arcade.play_sound(self.button_sound)
 
 
 class GameView(arcade.View):
