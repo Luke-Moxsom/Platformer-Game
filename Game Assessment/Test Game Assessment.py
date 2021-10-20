@@ -224,6 +224,7 @@ class GameOverView(arcade.View):
                 self.selected = 1
                 # Plays the player feedback sound when the player hovers over the CONTINUE button
                 arcade.play_sound(self.button_sound)
+
         # --- Tracking for SELECTED --- #
         # If the mouse is inside these points then then selected will be set to 2
         elif 100 < x < 320 and 170 < y < 270:
@@ -233,6 +234,7 @@ class GameOverView(arcade.View):
                 self.selected = 2
                 # Plays the player feedback sound when the player hovers over the MENU button
                 arcade.play_sound(self.button_sound)
+
         # --- Tracking for QUIT --- #
         # If the mouse is inside these points then then selected will be set to 3
         elif 150 < x < 300 and 75 < y < 180:
@@ -242,6 +244,7 @@ class GameOverView(arcade.View):
                 self.selected = 3
                 # Plays the player feedback sound when the player hovers over the MENU button
                 arcade.play_sound(self.button_sound)
+
         # If the player is not hovering over any button then selected will be set to 0 so no button will be highlighted
         else:
             self.selected = 0
@@ -253,9 +256,9 @@ class GameOverView(arcade.View):
         if 150 < _x < 300 and 275 < _y < 365:
             # --- CONTINUE --- #
             # Sets the view back to the game view
-            game_view = GameView()
-            game_view.setup(1)
-            self.window.show_view(game_view)
+            view = LevelSelect()
+            self.window.show_view(view)
+
         # --- Tracking for MENU --- #
         # If the mouse is clicked inside these points then these action will happen
         if 100 < _x < 320 and 170 < _y < 270:
@@ -265,6 +268,7 @@ class GameOverView(arcade.View):
             self.window.show_view(game_view)
         # --- Tracking for QUIT --- #
         # If the mouse is clicked inside these points then these action will happen
+
         if 150 < _x < 300 and 75 < _y < 180:
             # --- QUIT --- #
             # Quits out of the window
@@ -1102,7 +1106,8 @@ class GameView(arcade.View):
             changed_viewport = True
 
             # Change to the next level
-            self.setup(self.level)
+            view = LevelSelect()
+            self.window.show_view(view)
 
         # Check if the player touches water
         water_hit_list = arcade.check_for_collision_with_list(self.player_sprite,
