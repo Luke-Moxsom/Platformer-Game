@@ -419,12 +419,6 @@ class LevelSelect(arcade.View):
         # Sets button selector to 0
         self.button_selector = 0
 
-        # Links (self.level_select) to (GameView)
-        self.level_select = GameView()
-
-        # Sets the (self.level) inside of (GameView) to 0
-        self.level_select.level = 0
-
         # Sets up the picture for the background of the instruction screen
         self.texture = arcade.load_texture("images/Title.png")
 
@@ -529,8 +523,6 @@ class LevelSelect(arcade.View):
         else:
             arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, 230, 25, 25, arcade.csscolor.WHITE)
 
-        print(self.show_level)
-
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """ Contains where the mouse is """
         if 150 < x < 300 and 125 < y < 230:
@@ -614,7 +606,6 @@ class LevelSelect(arcade.View):
         if 150 < _x < 300 and 125 < _y < 230:
             # --- Tracking for QUIT --- #
             # If the mouse is clicked inside these points then these action will happen
-            print("Quit")
             game_view = InstructionView()
             self.window.show_view(game_view)
             self.selected = 3
@@ -622,35 +613,30 @@ class LevelSelect(arcade.View):
         # If the player clicked where the level selector is than check what level they should be taken to
         if self.show_level == 1:
             if 540 < _x < 740 and 265 < _y < 335:
-                self.level_select.level = 1
                 game_view = GameView()
                 game_view.setup(1)
                 self.window.show_view(game_view)
 
         if self.show_level == 2:
             if 540 < _x < 740 and 265 < _y < 335:
-                self.level_select.level = 2
                 game_view = GameView()
                 game_view.setup(2)
                 self.window.show_view(game_view)
 
         if self.show_level == 3:
             if 540 < _x < 740 and 265 < _y < 335:
-                self.level_select.level = 3
                 game_view = GameView()
                 game_view.setup(3)
                 self.window.show_view(game_view)
 
         if self.show_level == 4:
             if 540 < _x < 740 and 265 < _y < 335:
-                self.level_select.level = 4
                 game_view = GameView()
                 game_view.setup(4)
                 self.window.show_view(game_view)
 
         if self.show_level == 5:
             if 540 < _x < 740 and 265 < _y < 335:
-                self.level_select.level = 5
                 game_view = GameView()
                 game_view.setup(5)
                 self.window.show_view(game_view)
@@ -715,6 +701,8 @@ class GameView(arcade.View):
         # Separate variable that holds the player sprite
         self.player_sprite = None
 
+        self.level = None
+
         # Our 'physics' engine
         self.physics_engine = None
 
@@ -727,9 +715,6 @@ class GameView(arcade.View):
 
         # Sets the end of the map
         self.end_of_map = 0
-
-        # This sets the first level that the player will start on
-        self.level = 1
 
         # --- LOAD SOUNDS --- #
         # Hurt sound
@@ -752,6 +737,8 @@ class GameView(arcade.View):
         self.enemy_list = arcade.SpriteList()
         self.water_list = arcade.SpriteList()
 
+        self.level = level
+
         # -- DRAWS ENEMY ON THE GROUND --- #
         # Sets up the enemy to be drawn in the game
         enemy = arcade.Sprite(":resources:images/enemies/ladybug.png", SPRITE_SCALING)
@@ -759,11 +746,6 @@ class GameView(arcade.View):
         # --- WHERE THE ENEMY WILL BE DRAWN --- #
         # If level == 1 then draw the enemy here
         if self.level == 1:
-            # Point where the enemy will be drawn
-            enemy.bottom = 505
-            enemy.left = 1400
-
-        if self.level == 2:
             # Point where the enemy will be drawn
             enemy.bottom = 505
             enemy.left = 1400
@@ -798,7 +780,7 @@ class GameView(arcade.View):
 
         # --- LOADS THE MAP NAME --- #
         # Loads map file
-        map_name = f"maps/level{level}.tmx"
+        map_name = f"maps/level{self.level}.tmx"
 
         # Read in the tiled map
         my_map = arcade.tilemap.read_tmx(map_name)
@@ -893,6 +875,8 @@ class GameView(arcade.View):
         arcade.draw_text(ammo_text, 10 + self.view_left, 10 + self.view_bottom,
                          arcade.csscolor.WHITE, 18)
 
+        print(self.level)
+
     def process_keychange(self):
         """ Called when we change a key up/down or we move on/off a ladder """
         # Process up/down
@@ -951,7 +935,6 @@ class GameView(arcade.View):
 
             # Angle for the bullet to fly
             bullet.angle = math.degrees(angle)
-            print(f"Bullet angle: {bullet.angle:2f}")
 
             # Taking into account bullet angle
             bullet.change_x = math.cos(angle) * BULLET_SPEED
@@ -959,10 +942,6 @@ class GameView(arcade.View):
 
             # Add the bullet to appropriate lists
             self.bullet_list.append(bullet)
-
-        elif self.player_sprite.player_ammo < 0:
-            # If the player has no ammo then they cant shoot
-            print("No ammo")
 
     def on_key_press(self, key, modifiers):
         """ Called whenever a key is pressed """
@@ -1108,8 +1087,6 @@ class GameView(arcade.View):
         # See if the user got to the end of the level
         if arcade.check_for_collision_with_list(self.player_sprite,
                                                 self.do_touch_list):
-            # Advance to the next level
-            self.level += 1
 
             # Set the camera to the start
             self.view_left = 0
