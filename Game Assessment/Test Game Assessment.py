@@ -416,8 +416,17 @@ class LevelSelect(arcade.View):
         # Sets what level will be shown
         self.show_level = 1
 
+        # Links (self.level_select) to (GameView)
+        self.level_select = GameView()
+
+        # Make (self.level_select.level) = 1
+        self.level_select.level = 1
+
         # Sets button selector to 0
         self.button_selector = 0
+
+        # Make (self.show_level) the same as (self.level_select.level)
+        self.show_level = self.level_select.level
 
         # Sets up the picture for the background of the instruction screen
         self.texture = arcade.load_texture("images/Title.png")
@@ -1087,6 +1096,8 @@ class GameView(arcade.View):
         # See if the user got to the end of the level
         if arcade.check_for_collision_with_list(self.player_sprite,
                                                 self.do_touch_list):
+            # If the player finishes a level add 1 onto (self.level)
+            self.level += 1
 
             # Set the camera to the start
             self.view_left = 0
