@@ -419,6 +419,12 @@ class LevelSelect(arcade.View):
         # Sets button selector to 0
         self.button_selector = 0
 
+        # Links (self.level_select) to (GameView)
+        self.level_select = GameView()
+
+        # Sets the (self.level) inside of (GameView) to 0
+        self.level_select.level = 0
+
         # Sets up the picture for the background of the instruction screen
         self.texture = arcade.load_texture("images/Title.png")
 
@@ -616,30 +622,35 @@ class LevelSelect(arcade.View):
         # If the player clicked where the level selector is than check what level they should be taken to
         if self.show_level == 1:
             if 540 < _x < 740 and 265 < _y < 335:
+                self.level_select.level = 1
                 game_view = GameView()
                 game_view.setup(1)
                 self.window.show_view(game_view)
 
         if self.show_level == 2:
             if 540 < _x < 740 and 265 < _y < 335:
+                self.level_select.level = 2
                 game_view = GameView()
                 game_view.setup(2)
                 self.window.show_view(game_view)
 
         if self.show_level == 3:
             if 540 < _x < 740 and 265 < _y < 335:
+                self.level_select.level = 3
                 game_view = GameView()
                 game_view.setup(3)
                 self.window.show_view(game_view)
 
         if self.show_level == 4:
             if 540 < _x < 740 and 265 < _y < 335:
+                self.level_select.level = 4
                 game_view = GameView()
                 game_view.setup(4)
                 self.window.show_view(game_view)
 
         if self.show_level == 5:
             if 540 < _x < 740 and 265 < _y < 335:
+                self.level_select.level = 5
                 game_view = GameView()
                 game_view.setup(5)
                 self.window.show_view(game_view)
