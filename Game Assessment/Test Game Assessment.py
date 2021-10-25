@@ -732,6 +732,9 @@ class GameView(arcade.View):
         # Bullet wall
         self.bullet_hit = arcade.load_sound("sounds/Bullet Hit.wav")
 
+        # Jump sound
+        self.jump_sound = arcade.loud_sound("sounds/Jump")
+
     def setup(self, level):
         """ Set up the game here. Call this function to restart the game """
         # Used to keep track of our scrolling
@@ -884,8 +887,6 @@ class GameView(arcade.View):
         arcade.draw_text(ammo_text, 10 + self.view_left, 10 + self.view_bottom,
                          arcade.csscolor.WHITE, 18)
 
-        print(self.level)
-
     def process_keychange(self):
         """ Called when we change a key up/down or we move on/off a ladder """
         # Process up/down
@@ -895,7 +896,7 @@ class GameView(arcade.View):
             elif self.physics_engine.can_jump(y_distance=10) and not self.jump_needs_reset:
                 self.player_sprite.change_y = self.player_sprite.player_jump
                 self.jump_needs_reset = True
-                # arcade.play_sound(self.jump_sound)
+                arcade.play_sound(self.jump_sound)
         elif self.down_pressed and not self.up_pressed:
             if self.physics_engine.is_on_ladder():
                 self.player_sprite.change_y = -PLAYER_MOVEMENT_SPEED
