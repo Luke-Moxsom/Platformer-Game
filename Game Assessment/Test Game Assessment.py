@@ -174,57 +174,46 @@ class GameOverView(arcade.View):
 
     def on_draw(self):
         """ --- EVERYTHING INSIDE THIS WILL BE DRAWN OF THE SCREEN --- """
-
         # Everything between this will be drawn on the screen
         arcade.start_render()
-
         # Resets the viewport again to make sure the camera is looking at the viewport
         arcade.set_viewport(0, SCREEN_WIDTH, 0, SCREEN_HEIGHT)
-
         # Draws the picture in the background of the gameover screen
         self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
-
         # --- Draws the CONTINUE button --- #
         # If selected is == 1 then the continue button will be drawn slightly larger
         if self.selected == 1:
             arcade.draw_text("Continue", 225, 285,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
-
         # If selected is not == 1 then the button will be drawn at its normal smaller size
         else:
             arcade.draw_text("Continue", 225, 285,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
-
         # --- Draws the MENU button --- #
         # If selected is == 2 then the menu button will be drawn slightly larger
         if self.selected == 2:
             arcade.draw_text("Menu", 225, 180,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
-
         # If selected is not == 2 then the normal version of the button will be shown
         else:
             arcade.draw_text("Menu", 225, 180,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
-
         # --- Draws the QUIT button --- #
         # If selected is == 3 then the QUIT button will be drawn slightly larger
         if self.selected == 3:
             arcade.draw_text("Quit", 225, 75,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
-
         # If selected is not == 3 then the QUIT version of the button will be shown
         else:
             arcade.draw_text("Quit", 225, 75,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
-
         # Draws the title text for the gameover screen
         arcade.draw_text("LOL you died", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
                          arcade.color.WHITE, font_size=70, anchor_x="center")
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """ --- TRACKS WHERE THE MOUSE IS ON SCREEN --- """
-
         # --- Tracking for CONTINUE --- #
         # If the mouse is inside these points then then selected will be set to 1
         if 80 < x < 370 and 275 < y < 365:
@@ -255,20 +244,20 @@ class GameOverView(arcade.View):
                 self.selected = 3
                 # Plays the player feedback sound when the player hovers over the MENU button
                 arcade.play_sound(self.button_sound)
+
         # If the player is not hovering over any button then selected will be set to 0 so no button will be highlighted
         else:
             self.selected = 0
 
     def on_mouse_press(self, _x, _y, _button, _modifiers):
         """ --- TRACKS IF THE PLAYER CLICKS SOMEWHERE ON SCREEN --- """
-
         # --- Tracking for CONTINUE --- #
         # If the mouse is clicked inside these points then these action will happen
         if 150 < _x < 300 and 275 < _y < 365:
             # --- CONTINUE --- #
             # Sets the view back to the game view
-            game_view = LevelSelect()
-            self.window.show_view(game_view)
+            view = LevelSelect()
+            self.window.show_view(view)
 
         # --- Tracking for MENU --- #
         # If the mouse is clicked inside these points then these action will happen
@@ -277,9 +266,9 @@ class GameOverView(arcade.View):
             # Sets the view back to the instruction view
             game_view = InstructionView()
             self.window.show_view(game_view)
-
         # --- Tracking for QUIT --- #
         # If the mouse is clicked inside these points then these action will happen
+
         if 150 < _x < 300 and 75 < _y < 180:
             # --- QUIT --- #
             # Quits out of the window
@@ -427,8 +416,17 @@ class LevelSelect(arcade.View):
         # Sets what level will be shown
         self.show_level = 1
 
+        # Links (self.level_select) to (GameView)
+        self.level_select = GameView()
+
+        # Make (self.level_select.level) = 1
+        self.level_select.level = 1
+
         # Sets button selector to 0
         self.button_selector = 0
+
+        # Make (self.show_level) the same as (self.level_select.level)
+        self.show_level = self.level_select.level
 
         # Sets up the picture for the background of the instruction screen
         self.texture = arcade.load_texture("images/Title.png")
@@ -534,8 +532,6 @@ class LevelSelect(arcade.View):
         else:
             arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, 230, 25, 25, arcade.csscolor.WHITE)
 
-        print(self.show_level)
-
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """ Contains where the mouse is """
         if 150 < x < 300 and 125 < y < 230:
@@ -619,7 +615,6 @@ class LevelSelect(arcade.View):
         if 150 < _x < 300 and 125 < _y < 230:
             # --- Tracking for QUIT --- #
             # If the mouse is clicked inside these points then these action will happen
-            print("Quit")
             game_view = InstructionView()
             self.window.show_view(game_view)
             self.selected = 3
@@ -715,6 +710,8 @@ class GameView(arcade.View):
         # Separate variable that holds the player sprite
         self.player_sprite = None
 
+        self.level = None
+
         # Our 'physics' engine
         self.physics_engine = None
 
@@ -727,9 +724,6 @@ class GameView(arcade.View):
 
         # Sets the end of the map
         self.end_of_map = 0
-
-        # This sets the first level that the player will start on
-        self.level = 1
 
         # --- LOAD SOUNDS --- #
         # Hurt sound
@@ -752,6 +746,8 @@ class GameView(arcade.View):
         self.enemy_list = arcade.SpriteList()
         self.water_list = arcade.SpriteList()
 
+        self.level = level
+
         # -- DRAWS ENEMY ON THE GROUND --- #
         # Sets up the enemy to be drawn in the game
         enemy = arcade.Sprite(":resources:images/enemies/ladybug.png", SPRITE_SCALING)
@@ -759,11 +755,6 @@ class GameView(arcade.View):
         # --- WHERE THE ENEMY WILL BE DRAWN --- #
         # If level == 1 then draw the enemy here
         if self.level == 1:
-            # Point where the enemy will be drawn
-            enemy.bottom = 505
-            enemy.left = 1400
-
-        if self.level == 2:
             # Point where the enemy will be drawn
             enemy.bottom = 505
             enemy.left = 1400
@@ -798,7 +789,7 @@ class GameView(arcade.View):
 
         # --- LOADS THE MAP NAME --- #
         # Loads map file
-        map_name = f"maps/level{level}.tmx"
+        map_name = f"maps/level{self.level}.tmx"
 
         # Read in the tiled map
         my_map = arcade.tilemap.read_tmx(map_name)
@@ -893,6 +884,8 @@ class GameView(arcade.View):
         arcade.draw_text(ammo_text, 10 + self.view_left, 10 + self.view_bottom,
                          arcade.csscolor.WHITE, 18)
 
+        print(self.level)
+
     def process_keychange(self):
         """ Called when we change a key up/down or we move on/off a ladder """
         # Process up/down
@@ -951,7 +944,6 @@ class GameView(arcade.View):
 
             # Angle for the bullet to fly
             bullet.angle = math.degrees(angle)
-            print(f"Bullet angle: {bullet.angle:2f}")
 
             # Taking into account bullet angle
             bullet.change_x = math.cos(angle) * BULLET_SPEED
@@ -959,10 +951,6 @@ class GameView(arcade.View):
 
             # Add the bullet to appropriate lists
             self.bullet_list.append(bullet)
-
-        elif self.player_sprite.player_ammo < 0:
-            # If the player has no ammo then they cant shoot
-            print("No ammo")
 
     def on_key_press(self, key, modifiers):
         """ Called whenever a key is pressed """
@@ -1108,7 +1096,7 @@ class GameView(arcade.View):
         # See if the user got to the end of the level
         if arcade.check_for_collision_with_list(self.player_sprite,
                                                 self.do_touch_list):
-            # Advance to the next level
+            # If the player finishes a level add 1 onto (self.level)
             self.level += 1
 
             # Set the camera to the start
