@@ -733,7 +733,7 @@ class GameView(arcade.View):
         self.bullet_hit = arcade.load_sound("sounds/Bullet Hit.wav")
 
         # Jump sound
-        self.jump_sound = arcade.loud_sound("sounds/Jump")
+        self.jump_sound = arcade.load_sound("sounds/Jump.wav")
 
     def setup(self, level):
         """ Set up the game here. Call this function to restart the game """
@@ -894,9 +894,9 @@ class GameView(arcade.View):
             if self.physics_engine.is_on_ladder():
                 self.player_sprite.change_y = PLAYER_MOVEMENT_SPEED
             elif self.physics_engine.can_jump(y_distance=10) and not self.jump_needs_reset:
+                arcade.play_sound(self.jump_sound)
                 self.player_sprite.change_y = self.player_sprite.player_jump
                 self.jump_needs_reset = True
-                arcade.play_sound(self.jump_sound)
         elif self.down_pressed and not self.up_pressed:
             if self.physics_engine.is_on_ladder():
                 self.player_sprite.change_y = -PLAYER_MOVEMENT_SPEED
