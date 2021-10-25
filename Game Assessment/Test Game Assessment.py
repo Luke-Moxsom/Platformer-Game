@@ -753,7 +753,7 @@ class GameView(arcade.View):
 
         # -- DRAWS ENEMY ON THE GROUND --- #
         # Sets up the enemy to be drawn in the game
-        enemy = arcade.Sprite(":resources:images/enemies/ladybug.png", SPRITE_SCALING)
+        enemy = arcade.Sprite("enemies/Sponge.png", SPRITE_SCALING)
 
         # --- WHERE THE ENEMY WILL BE DRAWN --- #
         # If level == 1 then draw the enemy here
