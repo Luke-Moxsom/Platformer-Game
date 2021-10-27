@@ -431,6 +431,18 @@ class LevelSelect(arcade.View):
         # Sets up the picture for the background of the instruction screen
         self.texture = arcade.load_texture("images/Title.png")
 
+        # Load the texture for the level selector arrow up
+        self.arrow_up = arcade.load_texture("images/items/Arrow up.png")
+
+        # Load the texture for the level selector arrow up dark
+        self.arrow_up_dark = arcade.load_texture("images/items/Arrow up dark.png")
+
+        # Load the texture for the level selector arrow down
+        self.arrow_down = arcade.load_texture("images/items/Arrow down.png")
+
+        # Load the texture for the level selector arrow down dark
+        self.arrow_down_dark = arcade.load_texture("images/items/Arrow down dark.png")
+
         # Loads the sound for the button selection noise
         self.button_sound = arcade.load_sound("sounds/Button select.wav")
 
@@ -520,17 +532,21 @@ class LevelSelect(arcade.View):
         arcade.draw_text("Select Level", SCREEN_WIDTH / 2, SCREEN_HEIGHT / 1.4,
                          arcade.color.WHITE, font_size=70, anchor_x="center")
 
-        # Draws the arrows to change the level select
+        # --- Draws the up arrow for the button selectors --- #
+        # If the player is hovering then the button will be drawn darker
         if self.button_selector == 1:
-            arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, 370, 25, 25, arcade.csscolor.GRAY)
+            self.arrow_up_dark.draw_sized(SCREEN_WIDTH / 2, 370, 25, 25)
+        # If the player is not hovering then the button will be drawn normally
         else:
-            arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, 370, 25, 25, arcade.csscolor.WHITE)
+            self.arrow_up.draw_sized(SCREEN_WIDTH / 2, 370, 25, 25)
 
-        # Draws the arrows to change the level select
+        # --- Draws the down arrow for the button selectors --- #
+        # If the player is hovering then the button will be drawn darker
         if self.button_selector == 2:
-            arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, 230, 25, 25, arcade.csscolor.GRAY)
+            self.arrow_down_dark.draw_sized(SCREEN_WIDTH / 2, 230, 25, 25)
+        # If the player is not hovering then the button will be drawn normally
         else:
-            arcade.draw_rectangle_filled(SCREEN_WIDTH / 2, 230, 25, 25, arcade.csscolor.WHITE)
+            self.arrow_down.draw_sized(SCREEN_WIDTH / 2, 230, 25, 25)
 
     def on_mouse_motion(self, x: float, y: float, dx: float, dy: float):
         """ Contains where the mouse is """
