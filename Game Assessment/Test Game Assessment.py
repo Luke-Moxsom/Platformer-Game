@@ -8,7 +8,7 @@ SCREEN_WIDTH = 1280
 SCREEN_HEIGHT = 720
 
 # Sets the windows name
-SCREEN_TITLE = "Game Assessment"
+SCREEN_TITLE = "Water Drop"
 
 # Sprite scaling constants control how big sprite are
 SPRITE_SCALING = 0.3
@@ -181,14 +181,14 @@ class GameOverView(arcade.View):
         # Draws the picture in the background of the gameover screen
         self.texture.draw_sized(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2,
                                 SCREEN_WIDTH, SCREEN_HEIGHT)
-        # --- Draws the CONTINUE button --- #
-        # If selected is == 1 then the continue button will be drawn slightly larger
+        # --- Draws the LEVEL SELECT button --- #
+        # If selected is == 1 then the level select button will be drawn slightly larger
         if self.selected == 1:
-            arcade.draw_text("Continue", 225, 285,
+            arcade.draw_text("Level Select", 225, 285,
                              arcade.color.WHITE, font_size=60, anchor_x="center")
         # If selected is not == 1 then the button will be drawn at its normal smaller size
         else:
-            arcade.draw_text("Continue", 225, 285,
+            arcade.draw_text("Level Select", 225, 285,
                              arcade.color.WHITE, font_size=50, anchor_x="center")
         # --- Draws the MENU button --- #
         # If selected is == 2 then the menu button will be drawn slightly larger
@@ -417,16 +417,20 @@ class LevelSelect(arcade.View):
         self.show_level = 1
 
         # Links (self.level_select) to (GameView)
-        self.level_select = GameView()
+        self.yep = GameView()
 
-        # Make (self.level_select.level) = 1
-        self.level_select.level = 1
+        self.level_select = self.yep.level
 
         # Sets button selector to 0
         self.button_selector = 0
 
-        # Make (self.show_level) the same as (self.level_select.level)
-        self.show_level = self.level_select.level
+        # Checks if (self.show_level) is greater than 1
+        if self.show_level > 1:
+            # Make (self.show_level) the same as (self.level_select.level)
+            self.show_level = self.level_select.level
+        else:
+            # Set (self.show_level) to 1
+            self.show_level = 1
 
         # Sets up the picture for the background of the instruction screen
         self.texture = arcade.load_texture("images/Title.png")
@@ -750,6 +754,8 @@ class GameView(arcade.View):
 
         # Jump sound
         self.jump_sound = arcade.load_sound("sounds/Jump.wav")
+
+        self.water_eat = arcade.load_sound("sounds/Eat.wav")
 
     def setup(self, level):
         """ Set up the game here. Call this function to restart the game """
@@ -1135,6 +1141,10 @@ class GameView(arcade.View):
 
             # Add more ammo.
             self.player_sprite.player_ammo += 1
+
+            # Plays water eat sound
+            arcade.play_sound(self.water_eat)
+
         # If ammo drops bellow zero player dies
         if self.player_sprite.player_ammo < 0:
             # Switch to game over view
